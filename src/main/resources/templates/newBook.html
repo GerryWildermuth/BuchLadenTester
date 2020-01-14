@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>BookStore New Book Form</title>
+    <!-- link rel="stylesheet" type="text/css" th:href="@{/css/registration.css}" /-->
+</head>
+<body style="background-color: #ededed;">
+<div th:replace="fragments/header" style="background-color: #337ab7; height: 50px;"></div>
+<div class="container-fluid" style="margin-top: 30px;">
+
+    <div class="row col-lg-4 col-lg-offset-4" style="margin-top: 40px; background-color: #fff; padding: 20px; border: solid 1px #ddd;">
+        <form autocomplete="on" action="#" th:action="@{/books/newBook}" th:object="${book}" method="post" class="form-signin" role="form">
+            <h3 class="form-signin-heading">New Book Form</h3>
+            <div class="form-group">
+                <div class="">
+                    <input type="text" th:field="*{name}" placeholder="Name" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="">
+                    <input type="text" th:field="*{price}" placeholder="price for this book" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="">
+                    <input type="text" th:field="*{bookCover}" placeholder="Book Cover" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="">
+                    <input type="text" th:field="*{publishedDate}" placeholder="Published Date" class="form-control" />
+                </div>
+            </div>
+            <div>
+                <label class="col-form-label">Authors</label>
+                <select class="selectpicker" name="authors" id="authors"  multiple="multiple">
+                    <option th:each="author : ${authors}" th:value="${author.getAuthor_id()}" th:text="${author.getFirstName()},' '${author.getLastName()}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <div class="">
+                    <button type="submit" class="btn btn-primary btn-block">Create Book</button>
+                </div>
+            </div>
+            <span th:utext="${successMessage}"></span>
+            <div class="alert alert-success alert-dismissible col-sm-12"
+                 th:if="${(bindingResult != null &amp;&amp; bindingResult.getAllErrors() != null)}">
+                <button type="button" class="close" data-dismiss="alert"
+                        aria-hidden="true">×</button>
+                <ul th:each="data : ${bindingResult.getAllErrors()}">
+                    <li th:text="${data.getObjectName() + ' :: ' + data.getDefaultMessage()}"></li>
+                </ul>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript" type="text/javascript">
+    $(function () {
+        $('select').selectpicker();
+    });
+    /*<![CDATA[*/
+
+    /*[+
+
+
+    +]*/
+    /*]]>*/
+</script>
+</body>
+</html>

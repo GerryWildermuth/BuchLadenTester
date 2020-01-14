@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+</head>
+<body style="background-color: #ededed;height: 100vh;">
+<div th:replace="fragments/header" style="background-color: #337ab7; height: 50px;"></div>
+<div class="container-fluid" style="margin-top: 30px;height: 100%;">
+
+    <div class="row col-lg-12 col-lg-offset-9" style="margin: 40px 0px; background-color: #fff; padding: 20px; border: solid 1px #ddd;">
+        <h1 style="width: 100%">Books to display</h1>
+        <table id="myTable" class="display" style="width: 100%">
+            <thead>
+            <tr>
+                <th>Buch Titel</th>
+                <th>Buch Veröffentlichungs Datum</th>
+                <th>Buch Preis</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td th:value="${book.name}" th:text="${book.name}"> </td>
+                <td th:value="${book.publishedDate}" th:text="${book.publishedDate}"> </td>
+                <td th:value="${book.price}" th:text="${book.price}+' €'"></td>
+                <td>
+                    <form method="POST" th:action="@{/shoppingcart}" th:object="${book.getBook_id()}">
+                    <button type="submit" class="btn btn-primary">Add to cart</button>
+                </form>
+                </td>
+                <td>
+                    <form method="delete" th:action="@{/books/deleteBook}" th:object="${book}">
+                    <button class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+               <!-- <td th:each="author : ${book.authors}" th:value="${author.getAuthor_id()}" th:text="${author.getFirstName()}+''+${author.getLastName()}"> </td>
+                <td th:value="${book.bookCover}" th:text="${book.bookCover}"> </td>-->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer th:replace="fragments/footer"></footer>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready( function () {
+            $('#myTable').DataTable({
+            });
+        } );
+        /*<![CDATA[*/
+
+        /*[+
+
+
+        +]*/
+        /*]]>*/
+    </script>
+</body>
+</html>
+
+
