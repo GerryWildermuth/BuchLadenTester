@@ -21,7 +21,6 @@ public class Role {
     @Column(name = "role_desc")
     private String desc;
 
-
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.PERSIST,
@@ -34,6 +33,7 @@ public class Role {
     }
     public Role(Role role)
     {
+        this.roleId=role.getRoleId();
         this.role=role.getRole();
         this.desc=role.getDesc();
         this.privileges= role.getPrivileges();
@@ -69,6 +69,10 @@ public class Role {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void setPrivileges(Set<Privilege> privileges) {
+        this.privileges = privileges;
     }
 
     public String getDesc() {

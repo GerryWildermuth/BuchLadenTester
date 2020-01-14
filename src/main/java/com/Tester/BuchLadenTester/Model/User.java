@@ -15,7 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "userId")
     private int userId;
 
     @Column(name = "name")
@@ -48,6 +48,13 @@ public class User {
     })
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles= new HashSet<>(0);
+/*
+    @ManyToMany
+    @JoinTable(
+            name = "role_user",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    Set<Role> likedCourses;*/
 
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {
@@ -55,12 +62,12 @@ public class User {
                     CascadeType.MERGE
             })
     @JoinTable(name = "user_book", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
-    private Set<Book> books = new HashSet<>(0);
+    private Set<Book> userBooks = new HashSet<>(0);
 
     @OneToOne(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.PERSIST,
-                    CascadeType.MERGE
+                    CascadeType.REMOVE
             })
     private Shoppingcart shoppingcart = new Shoppingcart();;
 
@@ -153,12 +160,12 @@ public class User {
         this.status = status;
     }
 
-    public Set<Book> getBooks() {
-        return books;
+    public Set<Book> getUserBooks() {
+        return userBooks;
     }
 
-    public void setBooks(Set<Book> books) {
-        this.books = books;
+    public void setUserBooks(Set<Book> books) {
+        this.userBooks = books;
     }
 
     public Shoppingcart getShoppingcart() {

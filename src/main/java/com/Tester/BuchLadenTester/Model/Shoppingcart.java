@@ -39,5 +39,4 @@ public class Shoppingcart {
     public void setBooks(Set<Book> books) {
         this.books = books;
     }
-    
 }

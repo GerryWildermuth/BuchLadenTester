@@ -8,13 +8,12 @@
 <div class="container-fluid" style="margin-top: 30px;height: 100%;">
 
     <div class="row col-lg-12 col-lg-offset-9" style="margin: 40px 0px; background-color: #fff; padding: 20px; border: solid 1px #ddd;">
-        <h1 style="width: 100%">Books to display</h1>
+        <h1 style="width: 100%">Your Books</h1>
         <table id="myTable" class="display" style="width: 100%">
             <thead>
             <tr>
                 <th>Buch Titel</th>
                 <th>Buch Veröffentlichungs Datum</th>
-                <th>Buch Preis</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -23,18 +22,6 @@
             <tr th:each="book : ${books}">
                 <td th:value="${book.name}" th:text="${book.name}"> </td>
                 <td th:value="${book.publishedDate}" th:text="${book.publishedDate}"> </td>
-                <td th:value="${book.price}" th:text="${book.price}+' €'"></td>
-                <td>
-                    <form role="form" method="POST" th:action="@{'/shoppingcart'(bookId=${book.getBook_id()})}">
-                        <button type="submit" class="btn btn-primary">Add to cart</button>
-                    </form>
-                </td>
-                <td>
-                    <form action="#" th:action="@{'/books/deleteBook'(bookId=${book.getBook_id()})}" th:method="delete">
-                        <input type="hidden" name="_method" value="delete">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
                <!-- <td th:each="author : ${book.authors}" th:value="${author.getAuthor_id()}" th:text="${author.getFirstName()}+''+${author.getLastName()}"> </td>
                 <td th:value="${book.bookCover}" th:text="${book.bookCover}"> </td>-->
             </tr>

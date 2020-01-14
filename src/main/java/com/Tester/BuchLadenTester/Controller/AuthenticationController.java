@@ -1,5 +1,6 @@
 package com.Tester.BuchLadenTester.Controller;
 
+import com.Tester.BuchLadenTester.Model.Book;
 import com.Tester.BuchLadenTester.Repository.RoleRepository;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import com.Tester.BuchLadenTester.Service.SecurityServiceImpl;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.*;
 
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
@@ -27,7 +29,7 @@ import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
 public class AuthenticationController  {
 //extends WebMvcConfigurerAdapter
 	final
-UserService userService;
+	UserService userService;
 	final
 	RoleRepository roleRepository;
 	final UserRepository userRepository;
@@ -51,13 +53,16 @@ UserService userService;
 		return modelAndView;
 	}
 
-	@GetMapping(value = "/home", produces = {"application/json"})
-	public ModelAndView home() {
+	@GetMapping(value = "/home")
+	public ModelAndView home(Principal principal) {
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("home"); // resources/template/home.html
+		User currentUser = userRepository.findByEmail(principal.getName());
+		Set<Book> books = currentUser.getUserBooks();
+		double fullPrice=0;
+		modelAndView.addObject("books",books);
+		modelAndView.setViewName("userBooks");
 		return modelAndView;
 	}
-	
 	@GetMapping(value = "/admin")
 	public ModelAndView adminHome() {
 		ModelAndView modelAndView = new ModelAndView();
@@ -93,28 +98,27 @@ UserService userService;
 		if(bindingResult.hasErrors()) {
 			modelAndView.addObject("successMessage", "Please correct the errors in form!");
 			logger.info("Please correct the errors in form!");
-
 			modelMap.addAttribute("bindingResult", bindingResult);
 		}
 		else if(userService.isUserAlreadyPresent(user)){
 			modelAndView.addObject("successMessage", "user already exists!");
 			logger.info("user already exists!");
 		}
-		else if(roleRepository.findByRole("USER") == null){
-			modelAndView.addObject("successMessage", "no Role for the User");
-			logger.info("no Role for the User");
-		}
-		// we will save the user if, no binding errors
 		else {
-			userService.saveUser(user);
 			assert user != null;
-			securityService.autoLogin(user.getEmail(), user.getPassword());
-			modelAndView.addObject("successMessage", "User is registered successfully!");
-			logger.info("User is registered successfully!");
-			modelAndView.setViewName("books");
+			if(user.getRoles().isEmpty()){
+				modelAndView.addObject("successMessage", "User has no Role");
+				logger.info("User has no Role");
+			}
+			// we will save the user if, no binding errors
+			else {
+				userService.saveUser(user);
+				securityService.autoLogin(user.getEmail(), user.getPassword());
+				modelAndView.addObject("successMessage", "User is registered successfully!");
+				logger.info("User is registered successfully!");
+				modelAndView.setViewName("books");
+			}
 		}
-
-
 		return modelAndView;
 	}
 

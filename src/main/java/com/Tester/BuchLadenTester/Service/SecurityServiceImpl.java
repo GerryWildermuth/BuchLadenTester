@@ -15,11 +15,11 @@ public class SecurityServiceImpl implements SecurityService{
 
     private final AuthenticationManager authenticationManager;
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailService userDetailService;
 
-    public SecurityServiceImpl(AuthenticationManager authenticationManager, @Qualifier("UserDetailsService") UserDetailsService userDetailsService) {
+    public SecurityServiceImpl(AuthenticationManager authenticationManager,UserDetailService userDetailService) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+        this.userDetailService = userDetailService;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class SecurityServiceImpl implements SecurityService{
 
     @Override
     public void autoLogin(String username, String password) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = userDetailService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
 
         authenticationManager.authenticate(usernamePasswordAuthenticationToken);

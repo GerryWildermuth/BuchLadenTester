@@ -7,24 +7,21 @@ import com.Tester.BuchLadenTester.Model.Shoppingcart;
 import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import com.Tester.BuchLadenTester.Service.ShoppingCartImp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Set;
 
+import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.getPreviousPageByRequest;
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
 
 @Controller()
 @RequestMapping("/shoppingcart")
-public class StoreController {
+public class ShoppingCartController {
 
     final
     BookRepository bookRepository;
@@ -35,9 +32,10 @@ public class StoreController {
     final
     ShoppingcartRepository shoppingcartRepository;
 
+    @Autowired
     ShoppingCartImp shoppingCartService;
 
-    public StoreController(BookRepository bookRepository, UserRepository userRepository, ShoppingcartRepository shoppingcartRepository) {
+    public ShoppingCartController(BookRepository bookRepository, UserRepository userRepository, ShoppingcartRepository shoppingcartRepository) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.shoppingcartRepository = shoppingcartRepository;
@@ -48,7 +46,7 @@ public class StoreController {
         ModelAndView modelAndView = new ModelAndView();
         String name = principal.getName();
         User currentUser = userRepository.findByEmail(principal.getName());
-        Set<Book> books = currentUser.getBooks();
+        Set<Book> books = currentUser.getShoppingcart().getBooks();
         double fullPrice=0;
         for(Book book: books) fullPrice = book.getPrice() + fullPrice;
         //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -60,57 +58,38 @@ public class StoreController {
     }
 
     @PostMapping()//add Book to Cart
-    public ModelAndView AddBookToUserCart(@Valid Book book, Principal principal, BindingResult bindingResult, ModelMap modelMap){
+    public String AddBookToUserCart(@RequestParam Integer bookId, Principal principal, HttpServletRequest request){
         ModelAndView modelAndView = new ModelAndView();
         User user = userRepository.findByEmail(principal.getName());
-        Book mybook = bookRepository.getOne(book.getBook_id());
-
-        if(bindingResult.hasErrors()) {
-            modelAndView.addObject("successMessage", "Please correct the errors in form!");
-            logger.info("Please correct the errors in form!");
-            modelMap.addAttribute("bindingResult", bindingResult);
-        }
-        else if(shoppingCartService.isBookAlreadyPresentinShoppingCart(book,user))
+        Book book = bookRepository.getOne(bookId);
+        Shoppingcart shoppingcart = user.getShoppingcart();
+        if(shoppingCartService.isBookAlreadyPresentinShoppingCart(book,user))
         {
             modelAndView.addObject("successMessage", "The requested book is already in the cart!");
             logger.info("The requested book is already in the cart!");
         }
         else {
-            user.getShoppingcart().getBooks().add(book);
-            userRepository.save(user);
+            shoppingcart.getBooks().add(book);
+            shoppingcartRepository.save(shoppingcart);
+            //userRepository.save(user);
             modelAndView.addObject("successMessage", "Book is registered successfully!");
             logger.info("Book is registered successfully!");
         }
-        modelAndView.setViewName("shoppingcart");
-        return modelAndView;
+        return getPreviousPageByRequest(request).orElse("/");
     }
 
     @PostMapping(value="/buyBooks")//Bücher des shoppingcarts kaufen
-    public ModelAndView BuyBooksInCart(@Valid int CartId, Principal principal, BindingResult bindingResult, ModelMap modelMap) {
+    public ModelAndView BuyBooksInCart( Principal principal) {
         ModelAndView modelAndView = new ModelAndView();
         User user = userRepository.findByEmail(principal.getName());
-        Shoppingcart shoppingCart = shoppingcartRepository.getOne(CartId);
-        Set<Book> shoppingCartBooks = shoppingCart.getBooks();
-        // Check for the validations
-        if(bindingResult.hasErrors()) {
-            modelAndView.addObject("successMessage", "Please correct the errors in form!");
-            logger.info("Please correct the errors in form!");
-            modelMap.addAttribute("bindingResult", bindingResult);
+        Shoppingcart shoppingcart = user.getShoppingcart();
+        Set<Book> shoppingCartBooks = shoppingcart.getBooks();
+        if(shoppingCartBooks.isEmpty()){
+            modelAndView.addObject("successMessage","No Books in Possesion");
+            logger.info("No Books in Possesion");
         }
-        else if(shoppingCartBooks.containsAll(user.getBooks())){
-            StringBuilder errorString = new StringBuilder("The Books ");
-            for(Book book: shoppingCartBooks)
-            {
-                if(user.getBooks().contains(book))
-                errorString.append(book.getName());
-            }
-            errorString.append(" are allready owned!");
-            modelAndView.addObject("successMessage", errorString.toString());
-            logger.info(errorString.toString());
-        }
-        // we will save the book if, no binding errors
         else {
-            try
+            /*try
             {
                 Thread.sleep(4000);
             }
@@ -118,13 +97,16 @@ public class StoreController {
             {
                 Thread.currentThread().interrupt();
             }
-            double totalPrice = 0;
+            */double totalPrice = 0;
             for(Book book: shoppingCartBooks)
             {
                 totalPrice += book.getPrice();
             }
 
-            user.getBooks().addAll(shoppingCartBooks);
+            user.getUserBooks().addAll(shoppingCartBooks);
+            shoppingCartBooks.removeAll(shoppingCartBooks);
+            //shoppingcartRepository.save(shoppingcart);
+            userRepository.save(user);
             modelAndView.addObject("successMessage", "Books are now bought for a total of "+totalPrice+" successfully!");
             logger.info("Books are now bought for a total of \"+totalPrice+\" successfully!");
         }
@@ -133,28 +115,23 @@ public class StoreController {
     }
 
     //Buch von shoppingcart löschen
-    @DeleteMapping(value = "deleteBook")
-    public ModelAndView DeleteBookFromCart(@Valid int BookId, Principal principal, BindingResult bindingResult, ModelMap modelMap){
+    @PostMapping(value = "deleteBook")
+    public String DeleteBookFromCart(@RequestParam int bookId,Principal principal, HttpServletRequest request){
         ModelAndView modelAndView = new ModelAndView();
-        Book book = bookRepository.getOne(BookId);
+        Book book = bookRepository.getOne(bookId);
         User user = userRepository.findByEmail(principal.getName());
         Shoppingcart shoppingCart = user.getShoppingcart();
-        if(bindingResult.hasErrors()) {
-            modelAndView.addObject("successMessage", "Please correct the errors in form!");
-            logger.info("Please correct the errors in form!");
-            modelMap.addAttribute("bindingResult", bindingResult);
-        }
-        else if(!shoppingCart.getBooks().contains(book)){
+       if(!shoppingCart.getBooks().contains(book)){
             modelAndView.addObject("successMessage", "No such book in the Cart");
             logger.info("No such book in the Cart");
         }
         // we will save the book if, no binding errors
         else {
             shoppingCart.getBooks().remove(book);
+            shoppingcartRepository.save(shoppingCart);
             modelAndView.addObject("successMessage", "Book got removed from shoppingCart!");
             logger.info("Book got removed from shoppingCart!");
         }
-        modelAndView.setViewName("shoppingcart");
-        return modelAndView;
+        return getPreviousPageByRequest(request).orElse("/");
     }
 }

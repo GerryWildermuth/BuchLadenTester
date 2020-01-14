@@ -7,6 +7,8 @@ import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Model.Shoppingcart;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 public class ShoppingCartImp implements ShoppingCartService {
 
@@ -33,9 +35,7 @@ public class ShoppingCartImp implements ShoppingCartService {
 
     @Override
     public boolean isBookAlreadyPresentinShoppingCart(Book book, User user) {
-        boolean doesBookAlreadyExistsInShoppingcart = user.getShoppingcart().getBooks().contains(book);
-        if(doesBookAlreadyExistsInShoppingcart)
-        return true;
-        return false;
+        Set<Book> books = user.getShoppingcart().getBooks();
+        return books.contains(book);
     }
 }

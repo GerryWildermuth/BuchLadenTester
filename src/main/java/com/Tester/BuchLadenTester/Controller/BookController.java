@@ -1,23 +1,26 @@
 package com.Tester.BuchLadenTester.Controller;
 
+import com.Tester.BuchLadenTester.Model.Shoppingcart;
 import com.Tester.BuchLadenTester.Repository.AuthorRepository;
 import com.Tester.BuchLadenTester.Repository.BookRepository;
+import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Service.BookServiceImp;
 import com.Tester.BuchLadenTester.Model.Book;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Optional;
 
+import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.getPreviousPageByRequest;
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
 
 @Controller()
@@ -29,11 +32,15 @@ public class BookController {
     final
     AuthorRepository authorRepository;
 
+    final
+    ShoppingcartRepository shoppingcartRepository;
+
     BookServiceImp bookService;
 
-    public BookController(BookRepository bookRepository, AuthorRepository authorRepository) {
+    public BookController(BookRepository bookRepository, AuthorRepository authorRepository, ShoppingcartRepository shoppingcartRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
+        this.shoppingcartRepository = shoppingcartRepository;
     }
 
     @GetMapping()
@@ -85,27 +92,23 @@ public class BookController {
         return modelAndView;
     }
 
-    @DeleteMapping(value = "/deleteBook")
-    public ModelAndView DeleteBook(@Valid int BookId, BindingResult bindingResult, ModelMap modelMap){
+    @PostMapping(value = "/deleteBook")
+    public String DeleteBook(@RequestParam int bookId, HttpServletRequest request){
         ModelAndView modelAndView = new ModelAndView();
-        Optional<Book> book = bookRepository.findById(BookId);
-        if(bindingResult.hasErrors()) {
-            modelAndView.addObject("successMessage", "Please correct the errors in form!");
-            logger.info("Please correct the errors in form!");
-            modelMap.addAttribute("bindingResult", bindingResult);
+        Book book = bookRepository.getOne(bookId);
+        if(book==null){
+            modelAndView.addObject("successMessage", "There is no Book with this bookId");
+            logger.info("There is no Book with this bookId");
         }
-        else if(book==null){
-            modelAndView.addObject("successMessage", "There is no Book with this BookId");
-            logger.info("There is no Book with this BookId");
-        }
-        // we will save the book if, no binding errors
         else {
-            bookRepository.deleteById(BookId);
-            modelAndView.addObject("successMessage", "Book with BookId"+BookId+" got removed!");
-            logger.info("Book with BookId"+BookId+" got removed!");
+            for (Shoppingcart shoppingcart : shoppingcartRepository.findAll()) {
+                shoppingcart.getBooks().remove(book);
+            }
+            bookRepository.deleteById(bookId);
+            modelAndView.addObject("successMessage", "Book with bookId"+bookId+" got removed!");
+            logger.info("Book with bookId"+bookId+" got removed!");
         }
-        modelAndView.setViewName("books");
-        return modelAndView;
+        return getPreviousPageByRequest(request).orElse("/");
     }
 /*
     @InitBinder

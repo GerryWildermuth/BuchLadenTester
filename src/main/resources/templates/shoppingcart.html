@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"></meta>
+<!--    <meta charset="UTF-8"/>-->
     <title>ShoppingCart</title>
 </head>
 <body>
@@ -10,13 +10,14 @@
 
     <div class="row col-lg-12 col-lg-offset-9" style="margin: 40px 0px; background-color: #fff; padding: 20px; border: solid 1px #ddd;">
         <h1 style="width: 100%">ShoppingCart</h1>
-        <form>
         <table id="myTable" class="display" style="width: 100%">
             <thead>
             <tr>
                 <th>Titel</th>
                 <th>Veröffentlichungs Datum</th>
                 <th>Preis</th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -24,11 +25,22 @@
                 <td th:value="${book.name}" th:text="${book.name}"> </td>
                 <td th:value="${book.publishedDate}" th:text="${book.publishedDate}"> </td>
                 <td th:value="${book.price}" th:text="${book.price}+' €'"></td>
+                <td>
+                    <form action="#" th:action="@{'/shoppingcart/deleteBook'(bookId=${book.getBook_id()})}" th:method="delete">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
             </tr>
-            <div th:text="'Voller Preis: '+${fullPrice}" ></div>
             </tbody>
+
         </table>
+        <div th:unless="${#lists.isEmpty(books)}">
+        <form th:action="@{/shoppingcart/buyBooks}" method="post" role="form">
+            <div th:text="'Voller Preis: '+${fullPrice}" ></div>
+            <button type="submit" class="btn btn-primary">Alle Bücher Kaufen</button>
         </form>
+        </div>
     </div>
 </div>
 <footer th:replace="fragments/footer"></footer>

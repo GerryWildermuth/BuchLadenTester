@@ -25,13 +25,14 @@
                 <td th:value="${book.publishedDate}" th:text="${book.publishedDate}"> </td>
                 <td th:value="${book.price}" th:text="${book.price}+' €'"></td>
                 <td>
-                    <form method="POST" th:action="@{/shoppingcart}" th:object="${book.getBook_id()}">
-                    <button type="submit" class="btn btn-primary">Add to cart</button>
-                </form>
+                    <form role="form" method="POST" th:action="@{'/shoppingcart'(bookId=${book.getBook_id()})}">
+                        <button type="submit" class="btn btn-primary">Add to cart</button>
+                    </form>
                 </td>
                 <td>
-                    <form method="delete" th:action="@{/books/deleteBook}" th:object="${book}">
-                    <button class="btn btn-danger">Delete</button>
+                    <form action="#" th:action="@{'/books/deleteBook'(bookId=${book.getBook_id()})}" th:method="delete">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </td>
                <!-- <td th:each="author : ${book.authors}" th:value="${author.getAuthor_id()}" th:text="${author.getFirstName()}+''+${author.getLastName()}"> </td>
