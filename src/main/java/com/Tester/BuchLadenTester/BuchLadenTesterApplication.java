@@ -56,15 +56,10 @@ public class BuchLadenTesterApplication {
 			Role RoleAdmin = new Role(Admin,Admin,Admin);
 			Role RoleUser = new Role(User,User,User);
 
-			roleRepository.save(RoleAdmin);
-			roleRepository.save(RoleUser);
-
-			Role AdminRole = roleRepository.findByRole(Admin);
-			Set<Role> roles = new HashSet<>();
-			roles.add(AdminRole);
 			Privilege adminPrivilege =  privilegesRepository.findByName(User);
 			User RegularUser = new User("gerry1313@web.de","12345","Gerry",Admin);
-			RegularUser.setRoles(roles);
+			RegularUser.getUserRoles().add(RoleAdmin);
+			RegularUser.getUserRoles().add(RoleUser);
 			UserService.saveUser(RegularUser);
 
 			Calendar calendar = Calendar.getInstance();
@@ -88,7 +83,6 @@ public class BuchLadenTesterApplication {
 			Shoppingcart shoppingcart = RegularUser.getShoppingcart();
 			shoppingcart.setBooks(bookSet);
 			shoppingcartRepository.save(shoppingcart);
-//			UserService.saveUser(RegularUser);
 		};
 	}
 	public static Optional<String> getPreviousPageByRequest(HttpServletRequest request)

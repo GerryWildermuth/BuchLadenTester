@@ -18,6 +18,9 @@ public class Role {
     @Column(name = "role")
     private String role;
 
+    @ManyToMany(mappedBy = "userRoles")
+    Set<User> roleUsers = new HashSet<>();
+
     @Column(name = "role_desc")
     private String desc;
 
@@ -69,6 +72,14 @@ public class Role {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Set<User> getRoleUsers() {
+        return roleUsers;
+    }
+
+    public void setRoleUsers(Set<User> roleUsers) {
+        this.roleUsers = roleUsers;
     }
 
     public void setPrivileges(Set<Privilege> privileges) {

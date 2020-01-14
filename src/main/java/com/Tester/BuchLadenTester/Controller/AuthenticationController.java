@@ -1,13 +1,16 @@
 package com.Tester.BuchLadenTester.Controller;
 
 import com.Tester.BuchLadenTester.Model.Book;
+import com.Tester.BuchLadenTester.Model.Shoppingcart;
 import com.Tester.BuchLadenTester.Repository.RoleRepository;
+import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import com.Tester.BuchLadenTester.Service.SecurityServiceImpl;
 import com.Tester.BuchLadenTester.Model.Role;
 import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Service.UserService;
 import groovy.lang.Grab;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -32,17 +36,20 @@ public class AuthenticationController  {
 	UserService userService;
 	final
 	RoleRepository roleRepository;
+
 	final UserRepository userRepository;
 
 	final SecurityServiceImpl securityService;
 
-	private Map<String, Role> roleCache;
+	final
+	ShoppingcartRepository shoppingcartRepository;
 
-	public AuthenticationController(UserService userService, RoleRepository roleRepository, UserRepository userRepository, SecurityServiceImpl securityService) {
+	public AuthenticationController(UserService userService, RoleRepository roleRepository, UserRepository userRepository, SecurityServiceImpl securityService, ShoppingcartRepository shoppingcartRepository) {
 		this.userService = userService;
 		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
 		this.securityService = securityService;
+		this.shoppingcartRepository = shoppingcartRepository;
 	}
 
 	//Post is handelt automatically
@@ -58,7 +65,6 @@ public class AuthenticationController  {
 		ModelAndView modelAndView = new ModelAndView();
 		User currentUser = userRepository.findByEmail(principal.getName());
 		Set<Book> books = currentUser.getUserBooks();
-		double fullPrice=0;
 		modelAndView.addObject("books",books);
 		modelAndView.setViewName("userBooks");
 		return modelAndView;
@@ -73,14 +79,8 @@ public class AuthenticationController  {
 	@GetMapping(value = "/register")
 	public ModelAndView register() {
 		ModelAndView modelAndView = new ModelAndView();
-		User user = new User();
-		List<Role> activeRole = roleRepository.findAll();
-		roleCache = new HashMap<>();
-		for (Role role : activeRole) {
-			roleCache.put(role.getRole(), role);
-		}
-		modelAndView.addObject("user", user);
-		modelAndView.addObject("roles",getRoleStrings());
+		modelAndView.addObject("user", new User());
+		modelAndView.addObject("userRoles",getRoleStrings());
 		modelAndView.setViewName("register"); // resources/template/register.html
 		return modelAndView;
 	}
@@ -88,6 +88,7 @@ public class AuthenticationController  {
 	@PostMapping(value="/register")
 	public ModelAndView registerUser(@Valid User user, BindingResult bindingResult, ModelMap modelMap) {
 		ModelAndView modelAndView = new ModelAndView();
+
 		if(user!=null)
 			modelAndView.addObject("user", user);
 		else
@@ -106,17 +107,19 @@ public class AuthenticationController  {
 		}
 		else {
 			assert user != null;
-			if(user.getRoles().isEmpty()){
+			if(user.getUserRoles().isEmpty()){
 				modelAndView.addObject("successMessage", "User has no Role");
 				logger.info("User has no Role");
 			}
 			// we will save the user if, no binding errors
 			else {
+				String tempPassword = user.getPassword();
 				userService.saveUser(user);
-				securityService.autoLogin(user.getEmail(), user.getPassword());
+				securityService.autoLogin(user.getEmail(), tempPassword);
 				modelAndView.addObject("successMessage", "User is registered successfully!");
 				logger.info("User is registered successfully!");
-				modelAndView.setViewName("books");
+
+				modelAndView.setViewName("forward:/books");
 			}
 		}
 		return modelAndView;
@@ -124,16 +127,16 @@ public class AuthenticationController  {
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) throws Exception {
-		binder.registerCustomEditor(Set.class, "roles", new CustomCollectionEditor(Set.class) {
+		binder.registerCustomEditor(Set.class, "userRoles", new CustomCollectionEditor(Set.class) {
 			protected Object convertElement(Object element) {
 				if (element instanceof Role) {
 					System.out.println("Converting from Role to Role: " + element);
 					return element;
 				}
 				if (element instanceof String) {
-					//Role role =  roleCache.get(element);
-					Role role = roleRepository.findByRole(element.toString());
-					System.out.println("Looking up role for String " + element + ": " + role);
+					//Role roles =  roleCache.get(element);
+					Role role =roleRepository.findByRole(element.toString());
+					System.out.println("Looking up roles for String " + element + ": " + role);
 					return role;
 				}
 				System.out.println("Don't know what to do with: " + element);
@@ -141,6 +144,7 @@ public class AuthenticationController  {
 			}
 		});
 	}
+
 	private List<String> getRoleStrings() {
 		List<String> roleStrings = new ArrayList<>();
 		for (Role role :  roleRepository.findAll()) {

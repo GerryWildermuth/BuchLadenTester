@@ -36,12 +36,10 @@ public class SecurityServiceImpl implements SecurityService{
     public void autoLogin(String username, String password) {
         UserDetails userDetails = userDetailService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-
-        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-
+        authenticationManager.authenticate(usernamePasswordAuthenticationToken);//error
         if (usernamePasswordAuthenticationToken.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            logger.debug(String.format("Auto login %s successfully!", username));
+            logger.debug(String.format("Auto login was successfully!", username));
         }
     }
 }

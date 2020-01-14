@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")
+@Table(name = "User")
 public class User {
 
     @Id
@@ -34,6 +34,8 @@ public class User {
     @Transient
     private String passwordConfirm;
 
+    @Transient
+    private String tempRole;
 
     @Column(name = "status")
     private String status;
@@ -41,20 +43,15 @@ public class User {
     @Column(name = "active")
     private int active;
 
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = {
+    @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
     })
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles= new HashSet<>(0);
-/*
-    @ManyToMany
     @JoinTable(
             name = "role_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    Set<Role> likedCourses;*/
+    Set<Role> userRoles = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {
@@ -64,44 +61,47 @@ public class User {
     @JoinTable(name = "user_book", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> userBooks = new HashSet<>(0);
 
-    @OneToOne(fetch = FetchType.EAGER,
+    @OneToOne(fetch = FetchType.EAGER, optional = false,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.REMOVE
             })
-    private Shoppingcart shoppingcart = new Shoppingcart();;
-
+    @JoinColumn(name = "userId", nullable = false)
+    private Shoppingcart shoppingcart;
 
     public User() {
-
+        this.shoppingcart = new Shoppingcart();
     }
     public User(String Email,String Password,String Name, String Role){
         this.email=Email;
-        this.roles.add(new Role(Role,Role));
+        this.userRoles.add(new Role(Role,Role));
         this.name=Name;
         this.password=Password;
+        this.shoppingcart = new Shoppingcart();
     }
     public User(String Email,String Password,String Name, Set<Role> Roles){
         this.email=Email;
-        this.roles=Roles;
+        this.userRoles =Roles;
         this.name=Name;
         this.password=Password;
+        this.shoppingcart = new Shoppingcart();
     }
 
     public User(User user) {
         this.active = user.getActive();
         this.email = user.getEmail();
-        this.roles = user.getRoles();
+        this.userRoles = user.getUserRoles();
         this.name = user.getName();
         this.password = user.getPassword();
-        shoppingcart = new Shoppingcart();
+        this.shoppingcart = new Shoppingcart();
     }
 
     public User(String Email, String Password, String Name, Role role) {
         this.email=Email;
-        this.roles.add(role);
+        this.userRoles.add(role);
         this.name=Name;
         this.password=Password;
+        this.shoppingcart = new Shoppingcart();
     }
 
     public int getUserId() {
@@ -144,12 +144,12 @@ public class User {
         this.active = active;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Set<Role> getUserRoles() {
+        return userRoles;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setUserRoles(Set<Role> roles) {
+        this.userRoles = roles;
     }
 
     public String getStatus() {
@@ -166,6 +166,23 @@ public class User {
 
     public void setUserBooks(Set<Book> books) {
         this.userBooks = books;
+    }
+
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
+    }
+    public void addRoleUser(Role userRole) {
+        this.userRoles.add(userRole);
+        userRole.getRoleUsers().add(this);
+    }
+
+    public void removeRoleUser(Role userRole) {
+        this.userRoles.remove(userRole);
+        userRole.getRoleUsers().remove(this);
     }
 
     public Shoppingcart getShoppingcart() {

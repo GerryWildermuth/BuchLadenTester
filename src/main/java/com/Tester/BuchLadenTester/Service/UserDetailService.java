@@ -3,8 +3,6 @@ package com.Tester.BuchLadenTester.Service;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import com.Tester.BuchLadenTester.Model.Role;
 import com.Tester.BuchLadenTester.Model.User;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,7 +43,7 @@ public class UserDetailService implements UserDetailsService {
                     throw new UsernameNotFoundException("No user found with username: " + email);
                 }
                 Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-                for (Role role : user.getRoles()){
+                for (Role role : user.getUserRoles()){
                     grantedAuthorities.add(new SimpleGrantedAuthority(role.getRole()));//error
                 }
 

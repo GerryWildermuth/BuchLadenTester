@@ -102,7 +102,6 @@ public class ShoppingCartController {
             {
                 totalPrice += book.getPrice();
             }
-
             user.getUserBooks().addAll(shoppingCartBooks);
             shoppingCartBooks.removeAll(shoppingCartBooks);
             //shoppingcartRepository.save(shoppingcart);
