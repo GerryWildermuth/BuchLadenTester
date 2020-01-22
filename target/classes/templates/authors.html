@@ -1,10 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"></meta>
-    <title>BookStore</title>
+
 </head>
-<body>
-<h1>Authors to display</h1>
+<body style="background-color: #ededed;height: 100vh;">
+<div th:replace="fragments/header" style="background-color: #337ab7; height: 50px;"></div>
+<div class="container-fluid" style="margin-top: 30px;height: 100%;">
+
+    <div class="row col-lg-12 col-lg-offset-9" style="margin: 40px 0px; background-color: #fff; padding: 20px; border: solid 1px #ddd;">
+        <h1 style="width: 100%">Authors to display</h1>
+        <table id="myTable" class="display" style="width: 100%">
+            <thead>
+            <tr>
+                <th>Author </th>
+                <th>Buch Veröffentlichungs Datum</th>
+                <th>Buch Preis</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="author : ${authors}">
+                <td th:text="${author.firstName}"> </td>
+                <td th:text="${author.lastName}"> </td>
+                <td th:text="${author.birthDate}"></td>
+                <td>
+                    <form action="#" th:action="@{'/authors/deleteAuthor'(authorId=${author.getAuthor_id()})}" th:method="delete">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+                <!-- <td th:each="author : ${book.authors}" th:value="${author.getAuthor_id()}" th:text="${author.getFirstName()}+''+${author.getLastName()}"> </td>
+                 <td th:value="${book.bookCover}" th:text="${book.bookCover}"> </td>-->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer th:replace="fragments/footer"></footer>
+<script th:inline="javascript" type="text/javascript">
+    $(document).ready( function () {
+        $('#myTable').DataTable({
+        });
+    } );
+    /*<![CDATA[*/
+
+    /*[+
+
+
+    +]*/
+    /*]]>*/
+</script>
 </body>
 </html>
+
+

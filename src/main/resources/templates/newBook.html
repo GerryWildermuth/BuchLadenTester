@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>BookStore New Book Form</title>
+    <title>BookStore New Book</title>
     <!-- link rel="stylesheet" type="text/css" th:href="@{/css/registration.css}" /-->
 </head>
 <body style="background-color: #ededed;">
@@ -10,7 +10,7 @@
 
     <div class="row col-lg-4 col-lg-offset-4" style="margin-top: 40px; background-color: #fff; padding: 20px; border: solid 1px #ddd;">
         <form autocomplete="on" action="#" th:action="@{/books/newBook}" th:object="${book}" method="post" class="form-signin" role="form">
-            <h3 class="form-signin-heading">New Book Form</h3>
+            <h3 class="form-signin-heading">New Book</h3>
             <div class="form-group">
                 <div class="">
                     <input type="text" th:field="*{name}" placeholder="Name" class="form-control" />
@@ -33,8 +33,9 @@
             </div>
             <div>
                 <label class="col-form-label">Authors</label>
-                <select class="selectpicker" name="authors" id="authors"  multiple="multiple">
-                    <option th:each="author : ${authors}" th:value="${author.getAuthor_id()}" th:text="${author.getFirstName()},' '${author.getLastName()}">
+                <select class="selectpicker" name="bookAuthors" id="bookAuthors"  multiple="multiple">
+                    <option th:each="author : ${bookAuthors}" th:value="${author.getIdAsString()}" th:text="${author.firstName +' '+ author.lastName}"
+                            th:selected="${(author.firstName +' '+ author.lastName)=='unknown unknown'}">
                     </option>
                 </select>
             </div>

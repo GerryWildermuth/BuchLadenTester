@@ -31,14 +31,18 @@
             <li class="nav-item" th:classappend="${module == 'userBooks' ? 'active' : ''}">
                 <a class="nav-link" th:href="@{/home}">Your Books</a>
             </li>
-            <li class="nav-item"  th:classappend="${module == 'authors' ? 'active' : ''}">
-                <a class="nav-link" th:href="@{/authors}">Authors</a>
-            </li>
+
             <li class="nav-item"  th:classappend="${module == 'shoppingcart' ? 'active' : ''}">
                 <a class="nav-link" th:href="@{/shoppingcart}">shoppingcart</a>
             </li>
-            <li class="nav-item"  th:classappend="${module == 'role' ? 'active' : ''}">
-                <a class="nav-link" th:href="@{/role}">Roles</a>
+            <li class="nav-item"  th:classappend="${module == 'authors' ? 'active' : ''}">
+            <a class="nav-link" th:href="@{/authors}">Authors</a>
+            </li>
+            <li class="nav-item"  th:classappend="${module == 'newBook' ? 'active' : ''}">
+            <a class="nav-link" th:href="@{/books/newBook}">Add a new Book</a>
+            </li>
+            <li class="nav-item"  th:classappend="${module == 'newAuthor' ? 'active' : ''}">
+            <a class="nav-link" th:href="@{/authors/newAuthor}">Add a new Author</a>
             </li>
             <li class="nav-item"  th:classappend="${module == 'register' ? 'active' : ''}">
                 <a class="nav-link" th:href="@{/register}">register</a>

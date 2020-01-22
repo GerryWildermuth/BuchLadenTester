@@ -2,10 +2,7 @@ package com.Tester.BuchLadenTester;
 
 import com.Tester.BuchLadenTester.Enums.Enums;
 import com.Tester.BuchLadenTester.Model.*;
-import com.Tester.BuchLadenTester.Repository.BookRepository;
-import com.Tester.BuchLadenTester.Repository.PrivilegesRepository;
-import com.Tester.BuchLadenTester.Repository.RoleRepository;
-import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
+import com.Tester.BuchLadenTester.Repository.*;
 import com.Tester.BuchLadenTester.Service.UserServiceImp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +32,7 @@ public class BuchLadenTesterApplication {
 	private PrivilegesRepository privilegesRepository;
 
 	@Autowired
-	private BookRepository bookRepository;
+	private AuthorRepository authorRepository;
 	@Autowired
 	private ShoppingcartRepository shoppingcartRepository;
 
@@ -65,16 +62,18 @@ public class BuchLadenTesterApplication {
 			Calendar calendar = Calendar.getInstance();
 
 			Date date = new Date(calendar.getTime().getTime());
-			Book Book1 = new Book("Horizon",date,"",5.0);
-			Book Book2 = new Book("ABook",date,"",7.0);
-			Book Book3 = new Book("NEW",date,"",5.0);
-			Book Book4 = new Book("This",date,"",50.0);
-			Book Book5 = new Book("Hey",date,"",15.0);
-			bookRepository.save(Book1);
-			bookRepository.save(Book2);
-			bookRepository.save(Book3);
-			bookRepository.save(Book4);
-			bookRepository.save(Book5);
+			Author author1 = new Author("unknown","unknown",date);
+			Book Book1 = new Book("Horizon",date,author1,"",5.0);
+			Book Book2 = new Book("ABook",date,author1,"",7.0);
+			Book Book3 = new Book("NEW",date,author1,"",5.0);
+			Book Book4 = new Book("This",date,author1,"",50.0);
+			Book Book5 = new Book("Hey",date,author1,"",15.0);
+			author1.getAuthorBooks().add(Book1);
+			author1.getAuthorBooks().add(Book2);
+			author1.getAuthorBooks().add(Book3);
+			author1.getAuthorBooks().add(Book4);
+			author1.getAuthorBooks().add(Book5);
+			authorRepository.save(author1);
 
 			Set<Book> bookSet = new HashSet<>();
 			bookSet.add(Book1);

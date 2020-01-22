@@ -57,7 +57,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login").permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/books").permitAll()
-                .antMatchers("/books/newBook").permitAll()//testing only
                 .antMatchers("/home/**").hasAnyAuthority("SUPER_USER", "ADMIN", "USER")
                 .antMatchers("/shoppingcart/**").hasAnyAuthority("SUPER_USER", "ADMIN", "USER")
                 .antMatchers("/books/**").hasAnyAuthority("SUPER_USER", "ADMIN")

@@ -1,5 +1,6 @@
 package com.Tester.BuchLadenTester.Service;
 
+import com.Tester.BuchLadenTester.Model.Book;
 import com.Tester.BuchLadenTester.Repository.AuthorRepository;
 import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Model.Author;
@@ -11,21 +12,25 @@ import java.util.Optional;
 public class AuthorServiceImp implements AuthorService {
     final
     AuthorRepository authorRepository;
-    final
-    BookRepository bookRepository;
 
-    public AuthorServiceImp(AuthorRepository authorRepository, BookRepository bookRepository) {
+    public AuthorServiceImp(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
-        this.bookRepository = bookRepository;
+    }
+
+    @Override
+    public void saveAuthor(Author author) {
+        authorRepository.save(author);
+    }
+
+    @Override
+    public Author findByName(String Name) {
+        return null;
     }
 
     @Override
     public boolean isAuthorAlreadyPresent(Author author) {
-        //Optional<Author> existingAuthor = authorRepository.findByName(author.getFirstName()+" "+ author.getLastName());
         Optional<Author> existingAuthor = authorRepository.findById(author.getAuthor_id());
-        if(existingAuthor != null){
-            return true;
-        }
-        return false;
+        return existingAuthor.isPresent();
     }
+
 }

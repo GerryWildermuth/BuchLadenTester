@@ -11,20 +11,21 @@ public class Book {
     public Book() {
     }
 
-    public Book(Set<Author> authors) {
-        this.authors = authors;
+    public Book(Set<Author> bookAuthors) {
+        this.bookAuthors = bookAuthors;
     }
 
-    public Book(@NotNull String name, Set<Author> authors) {
+    public Book(@NotNull String name, Set<Author> bookAuthors) {
         this.name = name;
-        this.authors = authors;
+        this.bookAuthors = bookAuthors;
     }
 
-    public Book(String name, Date publishedDate, String bookCover, Double price) {
+    public Book(String name, Date publishedDate,Author author, String bookCover, Double price) {
         this.name = name;
         this.publishedDate = publishedDate;
         this.bookCover = bookCover;
         this.price = price;
+        bookAuthors.add(author);
     }
 
     @Id
@@ -35,14 +36,10 @@ public class Book {
     private Date publishedDate;
     private String bookCover;//(Base64String)
     private Double price;
-    //private int quantity;
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            })
-    @JoinTable(name = "book_author", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private Set<Author> authors = new HashSet<>(0);
+
+
+    @ManyToMany(mappedBy = "authorBooks")
+    private Set<Author> bookAuthors = new HashSet<>(0);
 
     public int getBook_id() {
         return book_id;
@@ -84,9 +81,11 @@ public class Book {
         this.bookCover = bookCover;
     }
 
-    public Set<Author> getAuthors() {
-        return authors;
+    public Set<Author> getBookAuthors() {
+        return bookAuthors;
     }
-    public void setAuthors(HashSet<Author> authors) {
+
+    public void setBookAuthors(Set<Author> bookAuthors) {
+        this.bookAuthors = bookAuthors;
     }
 }

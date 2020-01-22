@@ -9,13 +9,11 @@ import java.util.Optional;
 
 @Service
 public class BookServiceImp implements BookService {
-    final
-    AuthorRepository authorRepository;
+
     final
     BookRepository bookRepository;
 
-    public BookServiceImp(AuthorRepository authorRepository, BookRepository bookRepository) {
-        this.authorRepository = authorRepository;
+    public BookServiceImp( BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
@@ -26,11 +24,7 @@ public class BookServiceImp implements BookService {
 
     @Override
     public boolean isBookAlreadyPresent(Book book) {
-        boolean isBookAlreadyExists = false;
-        Optional<Book> existingBook = bookRepository.findByName(book.getName());
-        if(existingBook.isPresent()){
-            isBookAlreadyExists = true;
-        }
-        return isBookAlreadyExists;
+        Optional<Book> existingBook = bookRepository.findById(book.getBook_id());
+        return existingBook.isPresent();
     }
 }

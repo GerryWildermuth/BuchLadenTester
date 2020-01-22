@@ -15,6 +15,8 @@
                 <th>Buch Titel</th>
                 <th>Buch Veröffentlichungs Datum</th>
                 <th>Buch Preis</th>
+                <th>Authors</th>
+                <th>Cover</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -24,6 +26,9 @@
                 <td th:value="${book.name}" th:text="${book.name}"> </td>
                 <td th:value="${book.publishedDate}" th:text="${book.publishedDate}"> </td>
                 <td th:value="${book.price}" th:text="${book.price}+' €'"></td>
+
+                <td th:each="author : ${book.bookAuthors}" th:text="${author.getFirstName()+' '+ author.getLastName()}"> </td>
+                <td th:value="${book.bookCover}" th:text="${book.bookCover}"> </td>
                 <td>
                     <form role="form" method="POST" th:action="@{'/shoppingcart'(bookId=${book.getBook_id()})}">
                         <button type="submit" class="btn btn-primary">Add to cart</button>
@@ -35,8 +40,6 @@
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </td>
-               <!-- <td th:each="author : ${book.authors}" th:value="${author.getAuthor_id()}" th:text="${author.getFirstName()}+''+${author.getLastName()}"> </td>
-                <td th:value="${book.bookCover}" th:text="${book.bookCover}"> </td>-->
             </tr>
             </tbody>
         </table>
