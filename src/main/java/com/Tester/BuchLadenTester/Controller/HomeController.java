@@ -23,10 +23,7 @@ class HomeController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("books",bookRepository.findAll());
         modelAndView.setViewName("books");
-
         return modelAndView;
-        //BookController bookController = new BookController(bookRepository,authorRepository);
-       //bookController.BookOverview();
     }
 
 }

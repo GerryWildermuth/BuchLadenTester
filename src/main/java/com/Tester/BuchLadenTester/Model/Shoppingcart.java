@@ -22,11 +22,6 @@ public class Shoppingcart {
     @JoinTable(name = "cart_book", joinColumns = @JoinColumn(name = "shoppingcart_Id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> books = new HashSet<>(0);
 
-/*    @OneToOne(fetch = FetchType.EAGER,
-            cascade =  {CascadeType.MERGE,CascadeType.PERSIST},
-            mappedBy = "User")
-    private User user;*/
-    
     public int getShoppingcart_Id() {
         return shoppingcart_Id;
     }

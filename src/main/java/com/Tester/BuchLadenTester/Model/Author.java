@@ -1,7 +1,5 @@
 package com.Tester.BuchLadenTester.Model;
 
-import org.springframework.data.relational.core.sql.In;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
@@ -14,10 +12,10 @@ public class Author {
     }
     public Author(String firstName, String lastName, Date birthDate)
     {
-        this.FirstName=firstName;
-        this.LastName=lastName;
-        this.BirthDate=birthDate;
-        this.Name = firstName + " " + lastName;
+        this.firstName =firstName;
+        this.lastName =lastName;
+        this.birthDate =birthDate;
+        this.name = firstName + " " + lastName;
     }
 
     @Id
@@ -26,18 +24,19 @@ public class Author {
     private int author_id;
 
     @NotNull
-    @Column(name="firstName",unique = true)
-    private String FirstName;
+    @Column(name="firstName")
+    private String firstName;
 
     @NotNull
-    @Column(name="lastName",unique = true)
-    private String LastName;
+    @Column(name="lastName")
+    private String lastName;
 
-    @Transient
-    private String Name;
+    @NotNull
+    @Column(name="name",unique = true)
+    private String name;
 
     @Column(name="birthDate")
-    private Date BirthDate;
+    private Date birthDate;
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
@@ -64,33 +63,33 @@ public class Author {
     }
 
     public String getFirstName() {
-        return FirstName;
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
-        FirstName = firstName;
+        this.firstName = firstName;
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
     public Date getBirthDate() {
-        return BirthDate;
+        return birthDate;
     }
 
     public void setBirthDate(Date birthDate) {
-        BirthDate = birthDate;
+        this.birthDate = birthDate;
     }
 
-    public String getName() {return Name;}
+    public String getName() {return name;}
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public Set<Book> getAuthorBooks() {

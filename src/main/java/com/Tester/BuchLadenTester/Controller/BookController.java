@@ -1,13 +1,10 @@
 package com.Tester.BuchLadenTester.Controller;
 
-import com.Tester.BuchLadenTester.Model.Author;
-import com.Tester.BuchLadenTester.Model.Role;
-import com.Tester.BuchLadenTester.Model.Shoppingcart;
+import com.Tester.BuchLadenTester.Model.*;
 import com.Tester.BuchLadenTester.Repository.AuthorRepository;
 import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Service.BookServiceImp;
-import com.Tester.BuchLadenTester.Model.Book;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Controller;
@@ -109,29 +106,24 @@ public class BookController {
     @PostMapping(value = "/deleteBook")
     public String DeleteBook(@RequestParam int bookId, HttpServletRequest request){
         ModelAndView modelAndView = new ModelAndView();
-        Book book = bookRepository.getOne(bookId);
-        if(book==null){
+        Optional<Book> book = bookRepository.findById(bookId);
+        if(!book.isPresent()){
             modelAndView.addObject("successMessage", "There is no Book with this bookId");
             logger.info("There is no Book with this bookId");
         }
         else {
+            Book saveBook = book.get();
+            for(Author author : authorRepository.findAll()){
+                    author.getAuthorBooks().remove(saveBook);
+            }
             for (Shoppingcart shoppingcart : shoppingcartRepository.findAll()) {
-                shoppingcart.getBooks().remove(book);
+                    shoppingcart.getBooks().remove(saveBook);
             }
             bookRepository.deleteById(bookId);
             modelAndView.addObject("successMessage", "Book with bookId"+bookId+" got removed!");
             logger.info("Book with bookId"+bookId+" got removed!");
         }
         return getPreviousPageByRequest(request).orElse("/");
-    }
-    private Map<Integer, String> getAuthorStrings() {
-        //List<String> authorStrings = new ArrayList<>();
-        Map<Integer,String> authorStringIntegerMap = new HashMap<>();
-        for (Author author :  authorRepository.findAll()) {
-            //authorStrings.add(author.getFirstName() + " " + author.getLastName());
-            authorStringIntegerMap.put(author.getAuthor_id(),author.getName());
-        }
-        return authorStringIntegerMap;
     }
 
    @InitBinder

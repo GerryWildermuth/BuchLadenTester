@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.getPreviousPageByRequest;
@@ -49,8 +50,6 @@ public class ShoppingCartController {
         Set<Book> books = currentUser.getShoppingcart().getBooks();
         double fullPrice=0;
         for(Book book: books) fullPrice = book.getPrice() + fullPrice;
-        //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        //Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         modelAndView.addObject("books",books);
         modelAndView.addObject("fullPrice",fullPrice);
         modelAndView.setViewName("shoppingcart");
@@ -89,7 +88,7 @@ public class ShoppingCartController {
             logger.info("No Books in Possesion");
         }
         else {
-            /*try
+            try
             {
                 Thread.sleep(4000);
             }
@@ -97,7 +96,7 @@ public class ShoppingCartController {
             {
                 Thread.currentThread().interrupt();
             }
-            */double totalPrice = 0;
+            double totalPrice = 0;
             for(Book book: shoppingCartBooks)
             {
                 totalPrice += book.getPrice();
@@ -117,19 +116,26 @@ public class ShoppingCartController {
     @PostMapping(value = "deleteBook")
     public String DeleteBookFromCart(@RequestParam int bookId,Principal principal, HttpServletRequest request){
         ModelAndView modelAndView = new ModelAndView();
-        Book book = bookRepository.getOne(bookId);
+        Optional<Book> book = bookRepository.findById(bookId);
         User user = userRepository.findByEmail(principal.getName());
         Shoppingcart shoppingCart = user.getShoppingcart();
-       if(!shoppingCart.getBooks().contains(book)){
-            modelAndView.addObject("successMessage", "No such book in the Cart");
-            logger.info("No such book in the Cart");
+        if(book.isPresent()) {
+            Book saveBook = book.get();
+        if (!shoppingCart.getBooks().contains(saveBook)) {
+                modelAndView.addObject("successMessage", "No such book in the Cart");
+                logger.info("No such book in the Cart");
+            }
+            // we will save the book if, no binding errors
+            else {
+                shoppingCart.getBooks().remove(saveBook);
+                shoppingcartRepository.save(shoppingCart);
+                modelAndView.addObject("successMessage", "Book got removed from shoppingCart!");
+                logger.info("Book got removed from shoppingCart!");
+            }
         }
-        // we will save the book if, no binding errors
         else {
-            shoppingCart.getBooks().remove(book);
-            shoppingcartRepository.save(shoppingCart);
-            modelAndView.addObject("successMessage", "Book got removed from shoppingCart!");
-            logger.info("Book got removed from shoppingCart!");
+            modelAndView.addObject("successMessage", "There is no book with such id");
+            logger.info("There is no book with such id");
         }
         return getPreviousPageByRequest(request).orElse("/");
     }

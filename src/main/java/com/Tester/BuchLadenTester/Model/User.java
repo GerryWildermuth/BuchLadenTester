@@ -56,7 +56,7 @@ public class User {
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.PERSIST,
-                    CascadeType.MERGE
+                    CascadeType.MERGE,
             })
     @JoinTable(name = "user_book", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> userBooks = new HashSet<>(0);

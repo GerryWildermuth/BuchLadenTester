@@ -37,8 +37,11 @@ public class Book {
     private String bookCover;//(Base64String)
     private Double price;
 
-
-    @ManyToMany(mappedBy = "authorBooks")
+    @ManyToMany(mappedBy = "authorBooks",
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
     private Set<Author> bookAuthors = new HashSet<>(0);
 
     public int getBook_id() {

@@ -69,7 +69,9 @@ public class AuthorController {
     @PostMapping(value="/newAuthor")
     public ModelAndView CreateAuthor(@Valid Author author, BindingResult bindingResult, ModelMap modelMap) {
         ModelAndView modelAndView = new ModelAndView();
+        author.setName(author.getFirstName()+" "+author.getLastName());
         // Check for the validations
+        Optional<Author> authorbyName = authorRepository.findByName(author.getName());
         if(bindingResult.hasErrors()) {
             modelAndView.addObject("successMessage", "Please correct the errors in form!");
             logger.info("Please correct the errors in form!");
@@ -78,6 +80,10 @@ public class AuthorController {
         else if(authorService.isAuthorAlreadyPresent(author)){
             modelAndView.addObject("successMessage", "author already exists!");
             logger.info("author already exists!");
+        }
+        else if(authorbyName.isPresent()){
+            modelAndView.addObject("successMessage", "author with this name already exists!");
+            logger.info("author with this name already exists!");
         }
         // we will save the book if, no binding errors
         else {
@@ -106,15 +112,4 @@ public class AuthorController {
         modelAndView.setViewName("authors");
         return modelAndView;
     }
-
-    private Map<Integer, String> getAuthorStrings() {
-        //List<String> authorStrings = new ArrayList<>();
-        Map<Integer,String> authorStringIntegerMap = new HashMap<>();
-        for (Author author :  authorRepository.findAll()) {
-            //authorStrings.add(author.getFirstName() + " " + author.getLastName());
-            authorStringIntegerMap.put(author.getAuthor_id(),author.getName());
-        }
-        return authorStringIntegerMap;
-    }
-
 }
