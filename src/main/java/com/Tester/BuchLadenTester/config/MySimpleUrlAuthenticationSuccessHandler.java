@@ -1,7 +1,6 @@
 package com.Tester.BuchLadenTester.config;
 
 import com.Tester.BuchLadenTester.Enums.Enums;
-import org.apache.juli.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -72,12 +71,5 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
             return;
         }
         session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-    }
-
-    public void setRedirectStrategy(RedirectStrategy redirectStrategy) {
-        this.redirectStrategy = redirectStrategy;
-    }
-    protected RedirectStrategy getRedirectStrategy() {
-        return redirectStrategy;
     }
 }

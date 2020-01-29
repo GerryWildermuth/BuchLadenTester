@@ -1,13 +1,12 @@
 package com.Tester.BuchLadenTester.Service;
 
 
-import com.Tester.BuchLadenTester.Model.Role;
+import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Repository.RoleRepository;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
-import com.Tester.BuchLadenTester.Model.User;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.bCryptPasswordEncoder;
 
@@ -20,21 +19,22 @@ public class UserServiceImp implements UserService {
 	RoleRepository roleRepository;
 	final
 	UserRepository userRepository;
+	final HttpServletRequest request;
 
-	public UserServiceImp(RoleRepository roleRepository, UserRepository userRepository) {
+	public UserServiceImp(RoleRepository roleRepository, UserRepository userRepository, HttpServletRequest request) {
 		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
+		this.request = request;
 	}
 
-	@Override
 	public void saveUser(User user)
 	{
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userRepository.save(user);
 	}
 
-	@Override
-	public boolean isUserAlreadyPresent(User user) {
+
+	public boolean isUserWithEmailAlreadyPresent(User user) {
 		boolean isUserAlreadyExists = false;
 		User existingUser = userRepository.findByEmail(user.getEmail());
 		// If user is found in database, then then user already exists.
@@ -47,4 +47,5 @@ public class UserServiceImp implements UserService {
 	public User findByUsername(String username) {
 		return userRepository.findByName(username);
 	}
+
 }

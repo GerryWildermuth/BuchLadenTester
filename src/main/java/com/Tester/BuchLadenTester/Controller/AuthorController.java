@@ -1,12 +1,9 @@
 package com.Tester.BuchLadenTester.Controller;
 
-import com.Tester.BuchLadenTester.Model.Book;
-import com.Tester.BuchLadenTester.Model.Shoppingcart;
 import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Model.Author;
 import com.Tester.BuchLadenTester.Repository.AuthorRepository;
 import com.Tester.BuchLadenTester.Service.AuthorService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -17,11 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.getPreviousPageByRequest;
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
 
 @Controller()
@@ -37,6 +31,7 @@ public class AuthorController {
     final
     AuthorService authorService;
 
+    //Init of all services and repositories
     public AuthorController(BookRepository bookRepository, AuthorRepository authorRepository, AuthorService authorService) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
@@ -61,31 +56,24 @@ public class AuthorController {
 
         author.setBirthDate(sqlDate);
         modelAndView.addObject("author", author);
-        modelAndView.setViewName("newAuthor"); // resources/template/register.html
+        modelAndView.setViewName("newAuthor");
         return modelAndView;
     }
-
 
     @PostMapping(value="/newAuthor")
     public ModelAndView CreateAuthor(@Valid Author author, BindingResult bindingResult, ModelMap modelMap) {
         ModelAndView modelAndView = new ModelAndView();
+        //Setting correct full name for the author
         author.setName(author.getFirstName()+" "+author.getLastName());
-        // Check for the validations
-        Optional<Author> authorbyName = authorRepository.findByName(author.getName());
         if(bindingResult.hasErrors()) {
             modelAndView.addObject("successMessage", "Please correct the errors in form!");
             logger.info("Please correct the errors in form!");
             modelMap.addAttribute("bindingResult", bindingResult);
         }
-        else if(authorService.isAuthorAlreadyPresent(author)){
-            modelAndView.addObject("successMessage", "author already exists!");
-            logger.info("author already exists!");
+        else if(authorService.isAuthorWithNameAlreadyPresent(author)){
+            modelAndView.addObject("successMessage", "author with the name: "+author.getName()+" already exists!");
+            logger.info("author with this this name: "+author.getName()+" already exists!");
         }
-        else if(authorbyName.isPresent()){
-            modelAndView.addObject("successMessage", "author with this name already exists!");
-            logger.info("author with this name already exists!");
-        }
-        // we will save the book if, no binding errors
         else {
             authorService.saveAuthor(author);
             modelAndView.addObject("successMessage", "author is registered successfully!");
@@ -95,6 +83,7 @@ public class AuthorController {
         modelAndView.setViewName("authors");
         return modelAndView;
     }
+
     @PostMapping(value = "/deleteAuthor")
     public ModelAndView DeleteAuthor(@RequestParam int authorId, HttpServletRequest request){
         ModelAndView modelAndView = new ModelAndView();

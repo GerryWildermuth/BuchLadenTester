@@ -29,9 +29,6 @@ public class BuchLadenTesterApplication {
 	private RoleRepository roleRepository;
 
 	@Autowired
-	private PrivilegesRepository privilegesRepository;
-
-	@Autowired
 	private AuthorRepository authorRepository;
 	@Autowired
 	private ShoppingcartRepository shoppingcartRepository;
@@ -53,7 +50,6 @@ public class BuchLadenTesterApplication {
 			Role RoleAdmin = new Role(Admin,Admin,Admin);
 			Role RoleUser = new Role(User,User,User);
 
-			Privilege adminPrivilege =  privilegesRepository.findByName(User);
 			User RegularUser = new User("gerry1313@web.de","12345","Gerry",Admin);
 			RegularUser.getUserRoles().add(RoleAdmin);
 			RegularUser.getUserRoles().add(RoleUser);

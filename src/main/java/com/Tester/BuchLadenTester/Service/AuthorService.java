@@ -4,7 +4,7 @@ import com.Tester.BuchLadenTester.Model.Author;
 
 public interface AuthorService {
 
-    boolean isAuthorAlreadyPresent(Author author);
+    boolean isAuthorWithNameAlreadyPresent(Author author);
     void saveAuthor(Author author);
     Author findByName(String Name);
 }

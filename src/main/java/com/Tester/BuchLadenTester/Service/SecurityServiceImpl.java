@@ -1,11 +1,9 @@
 package com.Tester.BuchLadenTester.Service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
@@ -15,11 +13,11 @@ public class SecurityServiceImpl implements SecurityService{
 
     private final AuthenticationManager authenticationManager;
 
-    private final UserDetailService userDetailService;
+    private final UserDetailsServiceImpl UserDetailsService;
 
-    public SecurityServiceImpl(AuthenticationManager authenticationManager,UserDetailService userDetailService) {
+    public SecurityServiceImpl(AuthenticationManager authenticationManager, UserDetailsServiceImpl UserDetailsService) {
         this.authenticationManager = authenticationManager;
-        this.userDetailService = userDetailService;
+        this.UserDetailsService = UserDetailsService;
     }
 
     @Override
@@ -34,12 +32,12 @@ public class SecurityServiceImpl implements SecurityService{
 
     @Override
     public void autoLogin(String username, String password) {
-        UserDetails userDetails = userDetailService.loadUserByUsername(username);
+        UserDetails userDetails = UserDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-        authenticationManager.authenticate(usernamePasswordAuthenticationToken);//error
+        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         if (usernamePasswordAuthenticationToken.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            logger.debug(String.format("Auto login was successfully!", username));
+            logger.debug("Auto login was successfully!"+ username);
         }
     }
 }

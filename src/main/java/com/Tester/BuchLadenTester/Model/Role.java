@@ -24,13 +24,6 @@ public class Role {
     @Column(name = "role_desc")
     private String desc;
 
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            })
-    @JoinTable(name = "role_privilege", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "privilege_id"))
-    private Set<Privilege> privileges = new HashSet<>(0);
 
     public Role() {
     }
@@ -39,7 +32,7 @@ public class Role {
         this.roleId=role.getRoleId();
         this.role=role.getRole();
         this.desc=role.getDesc();
-        this.privileges= role.getPrivileges();
+        this.roleUsers=role.getRoleUsers();
     }
     public Role(String role,String desc){
         this.role = role;
@@ -49,12 +42,6 @@ public class Role {
     public Role(String role, String desc,String privilege) {
         this.role = role;
         this.desc = desc;
-        this.privileges.add(new Privilege(privilege));
-    }
-    public Role(String role, String desc,Privilege privilege) {
-        this.role = role;
-        this.desc = desc;
-        this.privileges.add(privilege);
     }
 
 
@@ -82,9 +69,6 @@ public class Role {
         this.roleUsers = roleUsers;
     }
 
-    public void setPrivileges(Set<Privilege> privileges) {
-        this.privileges = privileges;
-    }
 
     public String getDesc() {
         return desc;
@@ -92,9 +76,6 @@ public class Role {
 
     public void setDesc(String desc) {
         this.desc = desc;
-    }
-    public Set<Privilege> getPrivileges(){
-        return privileges;
     }
 
     @Override

@@ -1,16 +1,13 @@
 package com.Tester.BuchLadenTester.Controller;
 
 import com.Tester.BuchLadenTester.Model.Book;
-import com.Tester.BuchLadenTester.Model.Shoppingcart;
+import com.Tester.BuchLadenTester.Model.Role;
+import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Repository.RoleRepository;
 import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import com.Tester.BuchLadenTester.Service.SecurityServiceImpl;
-import com.Tester.BuchLadenTester.Model.Role;
-import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Service.UserService;
-import groovy.lang.Grab;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,19 +16,18 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
 
-@Grab("thymeleaf-spring4")
 @Controller()
 public class AuthenticationController  {
-//extends WebMvcConfigurerAdapter
 	final
 	UserService userService;
 	final
@@ -44,6 +40,7 @@ public class AuthenticationController  {
 	final
 	ShoppingcartRepository shoppingcartRepository;
 
+	//Init of all services and repositories
 	public AuthenticationController(UserService userService, RoleRepository roleRepository, UserRepository userRepository, SecurityServiceImpl securityService, ShoppingcartRepository shoppingcartRepository) {
 		this.userService = userService;
 		this.roleRepository = roleRepository;
@@ -52,7 +49,7 @@ public class AuthenticationController  {
 		this.shoppingcartRepository = shoppingcartRepository;
 	}
 
-	//Post is handelt automatically
+	//Login Post is handled automatically
 	@GetMapping(value = { "/login" }, produces = {"application/json"})
 	public ModelAndView login() {
 		ModelAndView modelAndView = new ModelAndView();
@@ -72,7 +69,7 @@ public class AuthenticationController  {
 	@GetMapping(value = "/admin")
 	public ModelAndView adminHome() {
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("admin"); // resources/template/admin.html
+		modelAndView.setViewName("admin");
 		return modelAndView;
 	}
 
@@ -81,50 +78,49 @@ public class AuthenticationController  {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("user", new User());
 		modelAndView.addObject("userRoles",getRoleStrings());
-		modelAndView.setViewName("register"); // resources/template/register.html
+		modelAndView.setViewName("register");
 		return modelAndView;
 	}
 
 	@PostMapping(value="/register")
 	public ModelAndView registerUser(@Valid User user, BindingResult bindingResult, ModelMap modelMap) {
 		ModelAndView modelAndView = new ModelAndView();
-
+		//If Post is called without previous get call creat a new user
 		if(user!=null)
 			modelAndView.addObject("user", user);
 		else
 			modelAndView.addObject("user", new User());
+
 		modelAndView.addObject("roles", getRoleStrings());
 		modelAndView.setViewName("register");
-		// Check for the validations
+
 		if(bindingResult.hasErrors()) {
 			modelAndView.addObject("successMessage", "Please correct the errors in form!");
 			logger.info("Please correct the errors in form!");
 			modelMap.addAttribute("bindingResult", bindingResult);
 		}
-		else if(userService.isUserAlreadyPresent(user)){
-			modelAndView.addObject("successMessage", "user already exists!");
-			logger.info("user already exists!");
+		else if(userService.isUserWithEmailAlreadyPresent(user)){
+			modelAndView.addObject("successMessage", "user with that email already exists!");
+			logger.info("user with that email already exists!");
 		}
 		else {
 			assert user != null;
 			if(user.getUserRoles().isEmpty()){
-				modelAndView.addObject("successMessage", "User has no Role");
-				logger.info("User has no Role");
+				modelAndView.addObject("successMessage", "User needs to have a Role");
+				logger.info("User needs to have a Role");
 			}
-			// we will save the user if, no binding errors
 			else {
-				String tempPassword = user.getPassword();
+				String notEncryptedPassword = user.getPassword();
 				userService.saveUser(user);
-				securityService.autoLogin(user.getEmail(), tempPassword);
+				securityService.autoLogin(user.getEmail(), notEncryptedPassword);
 				modelAndView.addObject("successMessage", "User is registered successfully!");
 				logger.info("User is registered successfully!");
-
 				modelAndView.setViewName("forward:/books");
 			}
 		}
 		return modelAndView;
 	}
-
+	//InitBinder is needed to resolve roleString from Form into actuall role objects
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) throws Exception {
 		binder.registerCustomEditor(Set.class, "userRoles", new CustomCollectionEditor(Set.class) {
@@ -134,7 +130,6 @@ public class AuthenticationController  {
 					return element;
 				}
 				if (element instanceof String) {
-					//Role roles =  roleCache.get(element);
 					Role role =roleRepository.findByRole(element.toString());
 					System.out.println("Looking up roles for String " + element + ": " + role);
 					return role;

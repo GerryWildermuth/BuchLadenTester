@@ -34,31 +34,24 @@ public class User {
     @Transient
     private String passwordConfirm;
 
-    @Transient
-    private String tempRole;
-
+    //Not used in any practical way
     @Column(name = "status")
     private String status;
 
-    @Column(name = "active")
-    private int active;
-
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "role_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role> userRoles = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE,
-            })
-    @JoinTable(name = "user_book", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
+    @OneToMany(fetch = FetchType.EAGER, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE,})
+    @JoinTable(
+            name = "user_book",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> userBooks = new HashSet<>(0);
 
     @OneToOne(fetch = FetchType.EAGER, optional = false,
@@ -88,12 +81,14 @@ public class User {
     }
 
     public User(User user) {
-        this.active = user.getActive();
         this.email = user.getEmail();
         this.userRoles = user.getUserRoles();
         this.name = user.getName();
         this.password = user.getPassword();
         this.shoppingcart = new Shoppingcart();
+        this.userBooks = user.getUserBooks();
+        this.status=user.getStatus();
+        this.passwordConfirm=user.getPasswordConfirm();
     }
 
     public User(String Email, String Password, String Name, Role role) {
@@ -134,14 +129,6 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getActive() {
-        return active;
-    }
-
-    public void setActive(int active) {
-        this.active = active;
     }
 
     public Set<Role> getUserRoles() {

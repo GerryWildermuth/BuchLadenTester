@@ -1,9 +1,7 @@
 package com.Tester.BuchLadenTester.Service;
 
-import com.Tester.BuchLadenTester.Model.Book;
-import com.Tester.BuchLadenTester.Repository.AuthorRepository;
-import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Model.Author;
+import com.Tester.BuchLadenTester.Repository.AuthorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,8 +26,8 @@ public class AuthorServiceImp implements AuthorService {
     }
 
     @Override
-    public boolean isAuthorAlreadyPresent(Author author) {
-        Optional<Author> existingAuthor = authorRepository.findById(author.getAuthor_id());
+    public boolean isAuthorWithNameAlreadyPresent(Author author) {
+        Optional<Author> existingAuthor = authorRepository.findByName(author.getName());
         return existingAuthor.isPresent();
     }
 

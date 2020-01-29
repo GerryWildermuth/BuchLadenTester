@@ -7,7 +7,7 @@ public interface UserService {
 
 	void saveUser(User user);
 	
-	boolean isUserAlreadyPresent(User user);
+	boolean isUserWithEmailAlreadyPresent(User user);
 
 	User findByUsername(String username);
 }
