@@ -100,8 +100,9 @@ public class AuthenticationController  {
 			modelMap.addAttribute("bindingResult", bindingResult);
 		}
 		else if(userService.isUserWithEmailAlreadyPresent(user)){
-			modelAndView.addObject("successMessage", "user with that email already exists!");
-			logger.info("user with that email already exists!");
+			assert user != null;
+			modelAndView.addObject("successMessage", "user with that email already exists! email: "+user.getEmail());
+			logger.info("user with that email already exists! email: "+user.getEmail());
 		}
 		else {
 			assert user != null;
@@ -113,8 +114,8 @@ public class AuthenticationController  {
 				String notEncryptedPassword = user.getPassword();
 				userService.saveUser(user);
 				securityService.autoLogin(user.getEmail(), notEncryptedPassword);
-				modelAndView.addObject("successMessage", "User is registered successfully!");
-				logger.info("User is registered successfully!");
+				modelAndView.addObject("successMessage", "User is registered successfully! with name: "+user.getName());
+				logger.info("User is registered successfully! with name: "+user.getName());
 				modelAndView.setViewName("forward:/books");
 			}
 		}

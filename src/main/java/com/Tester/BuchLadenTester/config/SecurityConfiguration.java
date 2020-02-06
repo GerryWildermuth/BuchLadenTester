@@ -23,9 +23,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.bCryptPasswordEncoder;
 
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
+//(debug = true)
 @EnableSwagger2
-//@EnableJpaRepositories(basePackageClasses = UserRepository.class)
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 

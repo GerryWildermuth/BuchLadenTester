@@ -1,25 +1,33 @@
-version: '2'
+version: '3.5'
 services:
   appbuchladen:
     image: gerry1313/buchladentester:latest
-    expose:
-      - 8080
+    container_name: appbuchladen
     ports:
       - "8080:8080"
+    environment:  
+      - DATABASE_HOST=docker-mysql
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=buchladen
+      - DATABASE_PORT=3306
     depends_on:
-      - mysql
-  mysql:
+      - docker-mysql
+  docker-mysql:
     image: mysql:latest
+    container_name: docker-mysql
+    volumes:
+    - buchladen_volume:/var/lib/mysql
     ports:
-      - "32770:3306"
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASES=buchladen
-      - MYSQL_MY_DATABASE=buchladen
-      - MYSQL_HOST=localhost
-      - MYSQL_PORT=32770
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-   
+      - MYSQL_DATABASE=buchladen
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+volumes:
+  buchladen_volume:
+
 
 

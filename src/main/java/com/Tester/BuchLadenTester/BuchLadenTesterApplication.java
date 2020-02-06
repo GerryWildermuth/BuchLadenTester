@@ -40,8 +40,6 @@ public class BuchLadenTesterApplication {
 		SpringApplication.run(BuchLadenTesterApplication.class, args);
 	}
 
-
-
 	@Bean
 	InitializingBean sendDatabase() {
 		return () -> {

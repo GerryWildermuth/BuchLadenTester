@@ -64,14 +64,14 @@ public class ShoppingCartController {
         Shoppingcart shoppingcart = user.getShoppingcart();
         if(shoppingCartService.isBookAlreadyPresentinShoppingCart(book,user))
         {
-            modelAndView.addObject("successMessage", "The requested book is already in the cart!");
+            modelAndView.addObject("successMessage", "The requested book with id: "+book.getBook_id()+" is already in the cart!");
             logger.info("The requested book is already in the cart!");
         }
         else {
             shoppingcart.getBooks().add(book);
             shoppingcartRepository.save(shoppingcart);
             //userRepository.save(user);
-            modelAndView.addObject("successMessage", "Book is registered successfully!");
+            modelAndView.addObject("successMessage", "Book: "+book.getName()+" get added to shoppingcart successfully!");
             logger.info("Book is registered successfully!");
         }
         return getPreviousPageByRequest(request).orElse("/");
@@ -99,14 +99,16 @@ public class ShoppingCartController {
             double totalPrice = 0;
             for(Book book: shoppingCartBooks)
             {
+
                 totalPrice += book.getPrice();
             }
+            //Remove all Books from cart and add them to the user
+            modelAndView.addObject("successMessage", "Books are now bought for a total of "+totalPrice+" successfully!");
+            logger.info("Books are now bought for a total of "+totalPrice+" successfully!");
             user.getUserBooks().addAll(shoppingCartBooks);
             shoppingCartBooks.removeAll(shoppingCartBooks);
-            //shoppingcartRepository.save(shoppingcart);
             userRepository.save(user);
-            modelAndView.addObject("successMessage", "Books are now bought for a total of "+totalPrice+" successfully!");
-            logger.info("Books are now bought for a total of \"+totalPrice+\" successfully!");
+
         }
         modelAndView.setViewName("shoppingcart");
         return modelAndView;
@@ -122,20 +124,20 @@ public class ShoppingCartController {
         if(book.isPresent()) {
             Book saveBook = book.get();
         if (!shoppingCart.getBooks().contains(saveBook)) {
-                modelAndView.addObject("successMessage", "No such book in the Cart");
+                modelAndView.addObject("successMessage", "No Book with "+bookId+" in the Cart");
                 logger.info("No such book in the Cart");
             }
             // we will save the book if, no binding errors
             else {
                 shoppingCart.getBooks().remove(saveBook);
                 shoppingcartRepository.save(shoppingCart);
-                modelAndView.addObject("successMessage", "Book got removed from shoppingCart!");
+                modelAndView.addObject("successMessage", "Book: "+saveBook.getName()+" got removed from shoppingCart!");
                 logger.info("Book got removed from shoppingCart!");
             }
         }
         else {
-            modelAndView.addObject("successMessage", "There is no book with such id");
-            logger.info("There is no book with such id");
+            modelAndView.addObject("successMessage", "There is no book with the id: "+bookId);
+            logger.info("There is no book with the id: "+bookId);
         }
         return getPreviousPageByRequest(request).orElse("/");
     }

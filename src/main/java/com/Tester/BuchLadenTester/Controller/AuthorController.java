@@ -76,8 +76,8 @@ public class AuthorController {
         }
         else {
             authorService.saveAuthor(author);
-            modelAndView.addObject("successMessage", "author is registered successfully!");
-            logger.info("author is registered successfully!");
+            modelAndView.addObject("successMessage", "author is registered successfully! with name: "+author.getName());
+            logger.info("author is registered successfully! with name: "+author.getName());
         }
         modelAndView.addObject("authors",authorRepository.findAll());
         modelAndView.setViewName("authors");
@@ -89,13 +89,13 @@ public class AuthorController {
         ModelAndView modelAndView = new ModelAndView();
         Optional<Author> author = authorRepository.findById(authorId);
         if(!author.isPresent()){
-            modelAndView.addObject("successMessage", "There is no Author with this authorId");
-            logger.info("There is no Author with this authorId");
+            modelAndView.addObject("successMessage", "There is no Author with this authorId: "+authorId);
+            logger.info("There is no Author with this authorId: "+authorId);
         }
         else {
             authorRepository.deleteById(authorId);
-            modelAndView.addObject("successMessage", "Book with authorId"+authorId+" got removed!");
-            logger.info("Book with authorId"+authorId+" got removed!");
+            modelAndView.addObject("successMessage", "Book with authorId: "+authorId+" got removed!");
+            logger.info("Book with authorId: "+authorId+" got removed!");
         }
         modelAndView.addObject("authors",authorRepository.findAll());
         modelAndView.setViewName("authors");

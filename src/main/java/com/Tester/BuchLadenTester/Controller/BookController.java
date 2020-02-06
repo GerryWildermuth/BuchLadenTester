@@ -82,7 +82,7 @@ public class BookController {
         }
         else if(bookRepository.findByName(book.getName()).isPresent()){
         //else if(bookService.isBookAlreadyPresent(book)){
-            modelAndView.addObject("successMessage", "book already exists!");
+            modelAndView.addObject("successMessage", "book with such a name already exists!");
             logger.info("book already exists!");
         }
         // we will save the book if, no binding errors
@@ -93,7 +93,7 @@ public class BookController {
                 author.addBookAuthors(book);
                 authorRepository.save(author);
             }
-            modelAndView.addObject("successMessage", "Book is registered successfully!");
+            modelAndView.addObject("successMessage", "Book is registered successfully! bookname is: "+book.getName());
             logger.info("Book is registered successfully!");
         }
         modelAndView.addObject("book", book);
@@ -108,8 +108,8 @@ public class BookController {
         ModelAndView modelAndView = new ModelAndView();
         Optional<Book> book = bookRepository.findById(bookId);
         if(!book.isPresent()){
-            modelAndView.addObject("successMessage", "There is no Book with this bookId");
-            logger.info("There is no Book with this bookId");
+            modelAndView.addObject("successMessage", "There is no Book with this bookId: "+bookId);
+            logger.info("There is no Book with this bookId: "+bookId);
         }
         else {
             Book saveBook = book.get();
