@@ -19,7 +19,6 @@ import java.util.Set;
 @Transactional
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-
     private final UserRepository userRepository;
 
     private final HttpServletRequest request;
@@ -43,9 +42,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
             Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
             for (Role role : user.getUserRoles()){
-                grantedAuthorities.add(new SimpleGrantedAuthority(role.getRole()));//error
+                grantedAuthorities.add(new SimpleGrantedAuthority(role.getRole()));
             }
-
+            //for debug reasons
             UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
             return  userDetails;
         }
@@ -54,7 +53,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    private final String getClientIP() {
+    private String getClientIP() {
         final String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader == null) {
             return request.getRemoteAddr();

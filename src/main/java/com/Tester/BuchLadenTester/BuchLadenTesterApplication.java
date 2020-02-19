@@ -2,39 +2,39 @@ package com.Tester.BuchLadenTester;
 
 import com.Tester.BuchLadenTester.Enums.Enums;
 import com.Tester.BuchLadenTester.Model.*;
-import com.Tester.BuchLadenTester.Repository.*;
+import com.Tester.BuchLadenTester.Repository.AuthorRepository;
+import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Service.UserServiceImp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @SpringBootApplication
 public class BuchLadenTesterApplication {
-	@Autowired
-	private UserServiceImp UserService;
 
-	@Autowired
-	private RoleRepository roleRepository;
+	private final AuthorRepository authorRepository;
 
-	@Autowired
-	private AuthorRepository authorRepository;
-	@Autowired
-	private ShoppingcartRepository shoppingcartRepository;
+	private final ShoppingcartRepository shoppingcartRepository;
+
+	private final UserServiceImp UserService;
 
 	public static Logger logger = LoggerFactory.getLogger("myStudyLogger");
 	public static BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+	public BuchLadenTesterApplication(AuthorRepository authorRepository, ShoppingcartRepository shoppingcartRepository, UserServiceImp UserService) {
+		this.authorRepository = authorRepository;
+		this.shoppingcartRepository = shoppingcartRepository;
+		this.UserService = UserService;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(BuchLadenTesterApplication.class, args);
@@ -48,14 +48,18 @@ public class BuchLadenTesterApplication {
 			Role RoleAdmin = new Role(Admin,Admin,Admin);
 			Role RoleUser = new Role(User,User,User);
 
-			User RegularUser = new User("gerry1313@web.de","12345","Gerry",Admin);
-			RegularUser.getUserRoles().add(RoleAdmin);
+			User AdminUser = new User("admin@web.de","12345","admin",Admin);
+			User RegularUser = new User("user@web.de","12345","user",User);
 			RegularUser.getUserRoles().add(RoleUser);
+			AdminUser.getUserRoles().add(RoleAdmin);
+			AdminUser.getUserRoles().add(RoleUser);
+
 			UserService.saveUser(RegularUser);
+			UserService.saveUser(AdminUser);
 
 			Calendar calendar = Calendar.getInstance();
-
 			Date date = new Date(calendar.getTime().getTime());
+
 			Author author1 = new Author("unknown","unknown",date);
 			Book Book1 = new Book("Horizon",date,author1,"",5.0);
 			Book Book2 = new Book("ABook",date,author1,"",7.0);
@@ -77,9 +81,5 @@ public class BuchLadenTesterApplication {
 			shoppingcart.setBooks(bookSet);
 			shoppingcartRepository.save(shoppingcart);
 		};
-	}
-	public static Optional<String> getPreviousPageByRequest(HttpServletRequest request)
-	{
-		return Optional.ofNullable(request.getHeader("Referer")).map(requestUrl -> "redirect:" + requestUrl);
 	}
 }

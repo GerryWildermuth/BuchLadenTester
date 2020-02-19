@@ -1,12 +1,13 @@
 package com.Tester.BuchLadenTester.Controller;
 
-import com.Tester.BuchLadenTester.Model.*;
+import com.Tester.BuchLadenTester.Model.Author;
+import com.Tester.BuchLadenTester.Model.Book;
+import com.Tester.BuchLadenTester.Model.Shoppingcart;
 import com.Tester.BuchLadenTester.Repository.AuthorRepository;
 import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Service.BookServiceImp;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -16,11 +17,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.security.Principal;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.getPreviousPageByRequest;
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
+import static com.Tester.BuchLadenTester.config.MyAuthenticationSuccessHandler.getPreviousPageByRequest;
 
 @Controller()
 @RequestMapping("/books")
@@ -30,22 +33,20 @@ public class BookController {
     BookRepository bookRepository;
     final
     AuthorRepository authorRepository;
-
     final
     ShoppingcartRepository shoppingcartRepository;
 
-    BookServiceImp bookService;
-    private Map<String, Author> authorCache;
+    private final BookServiceImp bookService;
 
-
-    public BookController(BookRepository bookRepository, AuthorRepository authorRepository, ShoppingcartRepository shoppingcartRepository) {
+    public BookController(BookRepository bookRepository, AuthorRepository authorRepository, ShoppingcartRepository shoppingcartRepository, BookServiceImp bookService) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.shoppingcartRepository = shoppingcartRepository;
+        this.bookService = bookService;
     }
 
     @GetMapping()
-    public ModelAndView BookOverview(Principal principal) {
+    public ModelAndView BookOverview() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("books",bookRepository.findAll());
         modelAndView.setViewName("books");
@@ -58,10 +59,6 @@ public class BookController {
         ModelAndView modelAndView = new ModelAndView();
         Book book = new Book();
         List<Author> authorList = authorRepository.findAll();
-        authorCache = new HashMap<String, Author>();
-        for (Author author : authorList) {
-            authorCache.put(author.getIdAsString(), author);
-        }
         Calendar calendar = Calendar.getInstance();
         java.sql.Date sqlDate = new java.sql.Date(calendar.getTime().getTime());
         book.setPublishedDate(sqlDate);
@@ -80,12 +77,16 @@ public class BookController {
             logger.info("Please correct the errors in form!");
             modelMap.addAttribute("bindingResult", bindingResult);
         }
-        else if(bookRepository.findByName(book.getName()).isPresent()){
-        //else if(bookService.isBookAlreadyPresent(book)){
+        //else if(bookRepository.findById(book.getBook_id()).isPresent()){
+        else if(bookService.isBookAlreadyPresent(book)){
             modelAndView.addObject("successMessage", "book with such a name already exists!");
             logger.info("book already exists!");
         }
-        // we will save the book if, no binding errors
+        else if(book.getBookAuthors().isEmpty()) {
+            modelAndView.addObject("successMessage", "Author is needed");
+            logger.info("Author is needed");
+        }
+        // we will save the book if, no binding errors. The saving of the Author automatically saves the book.
         else {
             Set<Author> bookAuthors = book.getBookAuthors();
             for(Author author : bookAuthors)
@@ -123,7 +124,7 @@ public class BookController {
             modelAndView.addObject("successMessage", "Book with bookId"+bookId+" got removed!");
             logger.info("Book with bookId"+bookId+" got removed!");
         }
-        return getPreviousPageByRequest(request).orElse("/");
+        return getPreviousPageByRequest(request).orElse("/books");
     }
 
    @InitBinder
@@ -135,9 +136,27 @@ public class BookController {
                     return element;
                 }
                 if (element instanceof String) {
-                    Author author = authorCache.get(element);
-                       System.out.println("Looking up author for id " + element + ": " + author);
-                       return author;
+                    //if element is a name
+                    try {
+                        Optional<Author> optionalAuthor = authorRepository.findByName(element.toString());
+                        if (optionalAuthor.isPresent()) {
+                            System.out.println("Looking up author for id " + element + ": " + optionalAuthor.get());
+                            return optionalAuthor.get();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //If element is a number
+                    try {
+                        int authorId = Integer.parseInt((String) element);
+                        Optional<Author> author = authorRepository.findById(authorId);
+                        if(author.isPresent()) {
+                            System.out.println("Looking up author for id " + element + ": " + author.get());
+                            return author.get();
+                        }
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                 }
                 System.out.println("Don't know what to do with: " + element);
                 return null;

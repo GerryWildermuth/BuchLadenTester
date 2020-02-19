@@ -6,7 +6,7 @@ import com.Tester.BuchLadenTester.Model.Book;
 import com.Tester.BuchLadenTester.Model.Shoppingcart;
 import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
-import com.Tester.BuchLadenTester.Service.ShoppingCartImp;
+import com.Tester.BuchLadenTester.Service.ShoppingCartServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +17,12 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.getPreviousPageByRequest;
+import static com.Tester.BuchLadenTester.config.MyAuthenticationSuccessHandler.getPreviousPageByRequest;
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
 
 @Controller()
 @RequestMapping("/shoppingcart")
-public class ShoppingCartController {
+public class  ShoppingCartController {
 
     final
     BookRepository bookRepository;
@@ -34,7 +34,7 @@ public class ShoppingCartController {
     ShoppingcartRepository shoppingcartRepository;
 
     @Autowired
-    ShoppingCartImp shoppingCartService;
+    ShoppingCartServiceImp shoppingCartService;
 
     public ShoppingCartController(BookRepository bookRepository, UserRepository userRepository, ShoppingcartRepository shoppingcartRepository) {
         this.bookRepository = bookRepository;
@@ -62,7 +62,7 @@ public class ShoppingCartController {
         User user = userRepository.findByEmail(principal.getName());
         Book book = bookRepository.getOne(bookId);
         Shoppingcart shoppingcart = user.getShoppingcart();
-        if(shoppingCartService.isBookAlreadyPresentinShoppingCart(book,user))
+        if(shoppingCartService.isBookAlreadyPresentInShoppingCart(book,user))
         {
             modelAndView.addObject("successMessage", "The requested book with id: "+book.getBook_id()+" is already in the cart!");
             logger.info("The requested book is already in the cart!");

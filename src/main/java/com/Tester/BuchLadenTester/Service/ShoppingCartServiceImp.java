@@ -5,21 +5,20 @@ import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Model.Book;
 import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Model.Shoppingcart;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 @Service
-public class ShoppingCartImp implements ShoppingCartService {
+public class ShoppingCartServiceImp implements ShoppingCartService {
 
-    final
+    @Autowired
     AuthorRepository authorRepository;
-    final
+    @Autowired
     BookRepository bookRepository;
 
-    public ShoppingCartImp(AuthorRepository authorRepository, BookRepository bookRepository) {
-        this.authorRepository = authorRepository;
-        this.bookRepository = bookRepository;
+    public ShoppingCartServiceImp(){
     }
 
 
@@ -34,7 +33,7 @@ public class ShoppingCartImp implements ShoppingCartService {
     }
 
     @Override
-    public boolean isBookAlreadyPresentinShoppingCart(Book book, User user) {
+    public boolean isBookAlreadyPresentInShoppingCart(Book book, User user) {
         Set<Book> books = user.getShoppingcart().getBooks();
         return books.contains(book);
     }

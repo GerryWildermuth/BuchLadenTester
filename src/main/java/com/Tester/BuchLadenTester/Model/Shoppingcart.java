@@ -2,6 +2,7 @@ package com.Tester.BuchLadenTester.Model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,6 +22,8 @@ public class Shoppingcart {
             })
     @JoinTable(name = "cart_book", joinColumns = @JoinColumn(name = "shoppingcart_Id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> books = new HashSet<>(0);
+
+
 
     public int getShoppingcart_Id() {
         return shoppingcart_Id;

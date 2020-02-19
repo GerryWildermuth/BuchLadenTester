@@ -20,6 +20,15 @@ public class Book {
         this.bookAuthors = bookAuthors;
     }
 
+    public Book(int book_id,String name, Date publishedDate,Author author, String bookCover, Double price) {
+        this.book_id=book_id;
+        this.name = name;
+        this.publishedDate = publishedDate;
+        this.bookCover = bookCover;
+        this.price = price;
+        bookAuthors.add(author);
+    }
+
     public Book(String name, Date publishedDate,Author author, String bookCover, Double price) {
         this.name = name;
         this.publishedDate = publishedDate;
@@ -37,6 +46,7 @@ public class Book {
     private String bookCover;//(Base64String)
     private Double price;
 
+    @NotNull
     @ManyToMany(mappedBy = "authorBooks",
             cascade = {
                     CascadeType.PERSIST,

@@ -5,7 +5,7 @@ import com.Tester.BuchLadenTester.Model.User;
 
 public interface UserService {
 
-	void saveUser(User user);
+	User saveUser(User user);
 	
 	boolean isUserWithEmailAlreadyPresent(User user);
 

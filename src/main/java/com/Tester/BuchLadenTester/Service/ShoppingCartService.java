@@ -5,6 +5,6 @@ import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Model.Shoppingcart;
 
 public interface ShoppingCartService {
-    boolean isBookAlreadyPresentinShoppingCart(Book book, User user);
+    boolean isBookAlreadyPresentInShoppingCart(Book book, User user);
     double totalPrice(Shoppingcart shoppingcart);
 }

@@ -2,35 +2,29 @@ package com.Tester.BuchLadenTester.Service;
 
 
 import com.Tester.BuchLadenTester.Model.User;
-import com.Tester.BuchLadenTester.Repository.RoleRepository;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.bCryptPasswordEncoder;
 
 
 @Service
 public class UserServiceImp implements UserService {
-	
 
-	final
-	RoleRepository roleRepository;
 	final
 	UserRepository userRepository;
-	final HttpServletRequest request;
 
-	public UserServiceImp(RoleRepository roleRepository, UserRepository userRepository, HttpServletRequest request) {
-		this.roleRepository = roleRepository;
+	public UserServiceImp(UserRepository userRepository) {
+
 		this.userRepository = userRepository;
-		this.request = request;
 	}
 
-	public void saveUser(User user)
+	public User saveUser(User user)
 	{
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		//requireNonNull(user.getEmail());//prove if email exists before persistant call
 		userRepository.save(user);
+		return user;
 	}
 
 

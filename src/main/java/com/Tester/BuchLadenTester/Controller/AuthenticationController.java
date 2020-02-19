@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.Tester.BuchLadenTester.BuchLadenTesterApplication.logger;
@@ -131,9 +132,12 @@ public class AuthenticationController  {
 					return element;
 				}
 				if (element instanceof String) {
-					Role role =roleRepository.findByRole(element.toString());
-					System.out.println("Looking up roles for String " + element + ": " + role);
-					return role;
+					List<Role> roles =roleRepository.findAll();
+					Optional<Role> firstRoleToFind = roles.stream().filter(role -> role.getRole().equals(element.toString())).findFirst();
+					if(firstRoleToFind.isPresent()) {
+						System.out.println("Looking up roles for String " + element + ": " + firstRoleToFind.get().getRole());
+						return firstRoleToFind.get();
+					}
 				}
 				System.out.println("Don't know what to do with: " + element);
 				return null;
