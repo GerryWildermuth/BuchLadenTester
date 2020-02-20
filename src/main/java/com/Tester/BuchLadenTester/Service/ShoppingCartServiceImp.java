@@ -25,7 +25,7 @@ public class ShoppingCartServiceImp implements ShoppingCartService {
     @Override
     public double totalPrice(Shoppingcart shoppingcart) {
         double totalPrice = 0;
-        for(Book book: shoppingcart.getBooks())
+        for(Book book: shoppingcart.getCartBooks())
         {
             totalPrice += book.getPrice();
         }
@@ -34,7 +34,7 @@ public class ShoppingCartServiceImp implements ShoppingCartService {
 
     @Override
     public boolean isBookAlreadyPresentInShoppingCart(Book book, User user) {
-        Set<Book> books = user.getShoppingcart().getBooks();
+        Set<Book> books = user.getShoppingcart().getCartBooks();
         return books.contains(book);
     }
 }

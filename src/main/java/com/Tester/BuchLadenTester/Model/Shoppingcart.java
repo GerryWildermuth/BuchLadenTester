@@ -9,21 +9,22 @@ import java.util.Set;
 public class Shoppingcart {
     public Shoppingcart() {
     }
+
     public Shoppingcart(Set<Book> books) {
-        this.books=books;
+        this.cartBooks = books;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int shoppingcart_Id;
 
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE
-            })
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+    })
     @JoinTable(name = "cart_book", joinColumns = @JoinColumn(name = "shoppingcart_Id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
-    private Set<Book> books = new HashSet<>(0);
-
-
+    private Set<Book> cartBooks = new HashSet<>(0);
 
     public int getShoppingcart_Id() {
         return shoppingcart_Id;
@@ -33,11 +34,21 @@ public class Shoppingcart {
         this.shoppingcart_Id = shoppingcart_Id;
     }
 
-    public Set<Book> getBooks() {
-        return books;
+    public Set<Book> getCartBooks() {
+        return cartBooks;
     }
 
-    public void setBooks(Set<Book> books) {
-        this.books = books;
+    public void setCartBooks(Set<Book> cartBooks) {
+        this.cartBooks = cartBooks;
+    }
+
+    public void addBookCarts(Book cartBooks) {
+        this.cartBooks.add(cartBooks);
+        cartBooks.getBookCarts().add(this);
+    }
+
+    public void removeBookCarts(Shoppingcart cartBooks) {
+        this.cartBooks.remove(cartBooks);
+        cartBooks.getCartBooks().remove(this);
     }
 }

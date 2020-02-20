@@ -76,14 +76,14 @@ class ShoppingCartServiceImpTest {
         double totalPrice = 0;
         double totalPricePreCalculated= 0;
         totalPricePreCalculated= bookSet.stream().mapToDouble(Book::getPrice).sum();
-        totalPrice= shoppingcart.getBooks().stream().mapToDouble(Book::getPrice).sum();
+        totalPrice= shoppingcart.getCartBooks().stream().mapToDouble(Book::getPrice).sum();
         Assertions.assertThat(totalPrice==totalPricePreCalculated);
     }
 
     //whenBookIsPresentItShouldReturnTrue
     @Test
     void isBookAlreadyPresentInShoppingCart() {
-        Set<Book> books = AdminUser.getShoppingcart().getBooks();
+        Set<Book> books = AdminUser.getShoppingcart().getCartBooks();
         Optional<Book> optionalBook = bookSet.stream().findFirst();
         assert optionalBook.isPresent();
         Assertions.assertThat(books.contains(optionalBook.get()));

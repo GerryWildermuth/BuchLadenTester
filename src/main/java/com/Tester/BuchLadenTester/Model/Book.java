@@ -54,6 +54,14 @@ public class Book {
             })
     private Set<Author> bookAuthors = new HashSet<>(0);
 
+    @NotNull
+    @ManyToMany(mappedBy = "cartBooks",
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    private Set<Shoppingcart> bookCarts = new HashSet<>(0);
+
     public int getBook_id() {
         return book_id;
     }
@@ -100,5 +108,13 @@ public class Book {
 
     public void setBookAuthors(Set<Author> bookAuthors) {
         this.bookAuthors = bookAuthors;
+    }
+
+    public Set<Shoppingcart> getBookCarts() {
+        return bookCarts;
+    }
+
+    public void setBookCarts(Set<Shoppingcart> bookCarts) {
+        this.bookCarts = bookCarts;
     }
 }

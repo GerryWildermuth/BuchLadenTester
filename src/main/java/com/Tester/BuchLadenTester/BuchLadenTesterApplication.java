@@ -78,7 +78,7 @@ public class BuchLadenTesterApplication {
 			bookSet.add(Book2);
 			bookSet.add(Book3);
 			Shoppingcart shoppingcart = RegularUser.getShoppingcart();
-			shoppingcart.setBooks(bookSet);
+			shoppingcart.setCartBooks(bookSet);
 			shoppingcartRepository.save(shoppingcart);
 		};
 	}

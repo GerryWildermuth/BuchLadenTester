@@ -118,7 +118,7 @@ public class BookController {
                     author.getAuthorBooks().remove(saveBook);
             }
             for (Shoppingcart shoppingcart : shoppingcartRepository.findAll()) {
-                    shoppingcart.getBooks().remove(saveBook);
+                    shoppingcart.getCartBooks().remove(saveBook);
             }
             bookRepository.deleteById(bookId);
             modelAndView.addObject("successMessage", "Book with bookId"+bookId+" got removed!");
