@@ -1,11 +1,8 @@
 package com.Tester.BuchLadenTester.Service;
 
-import com.Tester.BuchLadenTester.Repository.AuthorRepository;
-import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Model.Book;
-import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Model.Shoppingcart;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.Tester.BuchLadenTester.Model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -13,12 +10,9 @@ import java.util.Set;
 @Service
 public class ShoppingCartServiceImp implements ShoppingCartService {
 
-    @Autowired
-    AuthorRepository authorRepository;
-    @Autowired
-    BookRepository bookRepository;
 
     public ShoppingCartServiceImp(){
+
     }
 
 

@@ -1,26 +1,22 @@
 package com.Tester.BuchLadenTester.Service;
 
-import com.Tester.BuchLadenTester.BuchLadenTesterApplication;
 import com.Tester.BuchLadenTester.Model.User;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {BuchLadenTesterApplication.class,UserServiceImp.class})
 @ExtendWith(MockitoExtension.class)
-class UserServiceImpTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+class UserServiceImpUnitTest {
 
     @Mock
     UserRepository userRepository;

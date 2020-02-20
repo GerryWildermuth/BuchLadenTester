@@ -3,11 +3,13 @@ package com.Tester.BuchLadenTester;
 import com.Tester.BuchLadenTester.Enums.Enums;
 import com.Tester.BuchLadenTester.Model.*;
 import com.Tester.BuchLadenTester.Repository.AuthorRepository;
+import com.Tester.BuchLadenTester.Repository.RoleRepository;
 import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Service.UserServiceImp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -25,15 +27,19 @@ public class BuchLadenTesterApplication {
 
 	private final ShoppingcartRepository shoppingcartRepository;
 
+	final
+	RoleRepository roleRepository;
+
 	private final UserServiceImp UserService;
 
 	public static Logger logger = LoggerFactory.getLogger("myStudyLogger");
 	public static BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-	public BuchLadenTesterApplication(AuthorRepository authorRepository, ShoppingcartRepository shoppingcartRepository, UserServiceImp UserService) {
+	public BuchLadenTesterApplication(AuthorRepository authorRepository, ShoppingcartRepository shoppingcartRepository, UserServiceImp UserService, RoleRepository roleRepository) {
 		this.authorRepository = authorRepository;
 		this.shoppingcartRepository = shoppingcartRepository;
 		this.UserService = UserService;
+		this.roleRepository = roleRepository;
 	}
 
 	public static void main(String[] args) {
@@ -45,17 +51,17 @@ public class BuchLadenTesterApplication {
 		return () -> {
 			String Admin = Enums.Role.ADMIN.toString();
 			String User = Enums.Role.USER.toString();
+
 			Role RoleAdmin = new Role(Admin,Admin,Admin);
-			Role RoleUser = new Role(User,User,User);
-
-			User AdminUser = new User("admin@web.de","12345","admin",Admin);
-			User RegularUser = new User("user@web.de","12345","user",User);
-			RegularUser.getUserRoles().add(RoleUser);
-			AdminUser.getUserRoles().add(RoleAdmin);
-			AdminUser.getUserRoles().add(RoleUser);
-
-			UserService.saveUser(RegularUser);
+			User AdminUser = new User("admin@web.de","12345","admin",RoleAdmin);
+			AdminUser.addRoleUser(RoleAdmin);
 			UserService.saveUser(AdminUser);
+			
+
+			Role RoleUser = new Role(User,User,User);
+			User RegularUser = new User("user@web.de","12345","user",RoleUser);
+			RegularUser.addRoleUser(RoleUser);
+			UserService.saveUser(RegularUser);
 
 			Calendar calendar = Calendar.getInstance();
 			Date date = new Date(calendar.getTime().getTime());
@@ -77,9 +83,9 @@ public class BuchLadenTesterApplication {
 			bookSet.add(Book1);
 			bookSet.add(Book2);
 			bookSet.add(Book3);
-			Shoppingcart shoppingcart = RegularUser.getShoppingcart();
+			/*Shoppingcart shoppingcart = RegularUser.getShoppingcart();
 			shoppingcart.setCartBooks(bookSet);
-			shoppingcartRepository.save(shoppingcart);
+			shoppingcartRepository.save(shoppingcart);*/
 		};
 	}
 }

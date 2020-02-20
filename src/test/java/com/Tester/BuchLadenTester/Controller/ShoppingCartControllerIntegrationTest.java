@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -48,7 +49,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("prod")
 @TestPropertySource(locations = {"classpath:application.properties","classpath:application-prod.properties","classpath:application-dev.properties"})
 @ExtendWith(MockitoExtension.class)
-class ShoppingCartControllerTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+class ShoppingCartControllerIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
@@ -82,10 +84,10 @@ class ShoppingCartControllerTest {
     @WithMockUser(username = "admin@web.de", authorities = { "ADMIN", "USER" })
     void buyBooksInCart() throws Exception
     {
-        mvc.perform(post("/shoppingcart")
+      /*  mvc.perform(post("/shoppingcart")
                 .param("bookId", "3"))
                 .andExpect(status().isOk());
-
+*/
 
         mvc.perform(post("/shoppingcart/buyBooks"))
                 .andExpect(status().isOk());

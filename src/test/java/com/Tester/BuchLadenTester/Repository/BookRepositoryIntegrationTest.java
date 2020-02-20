@@ -1,21 +1,18 @@
 package com.Tester.BuchLadenTester.Repository;
 
 import com.Tester.BuchLadenTester.BuchLadenTesterApplication;
-import com.Tester.BuchLadenTester.Controller.BookController;
 import com.Tester.BuchLadenTester.Model.Author;
 import com.Tester.BuchLadenTester.Model.Book;
-import com.Tester.BuchLadenTester.Model.CustomUserDetails;
-import com.Tester.BuchLadenTester.Service.*;
+import com.Tester.BuchLadenTester.Service.UserServiceImp;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -27,12 +24,12 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {BuchLadenTesterApplication.class,UserServiceImp.class})
 @TestPropertySource(locations = {"classpath:application.properties","classpath:application-prod.properties","classpath:application-dev.properties"})
 //@DataJpaTest supports rollback after running every test case
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @DataJpaTest()
-class BookRepositoryTest {
+class BookRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager testEntityManager;

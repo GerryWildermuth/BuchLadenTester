@@ -3,11 +3,13 @@ package com.Tester.BuchLadenTester.Controller;
 import com.Tester.BuchLadenTester.Model.Book;
 import com.Tester.BuchLadenTester.Model.Role;
 import com.Tester.BuchLadenTester.Model.User;
+import com.Tester.BuchLadenTester.Repository.BookRepository;
 import com.Tester.BuchLadenTester.Repository.RoleRepository;
 import com.Tester.BuchLadenTester.Repository.ShoppingcartRepository;
 import com.Tester.BuchLadenTester.Repository.UserRepository;
 import com.Tester.BuchLadenTester.Service.SecurityServiceImpl;
 import com.Tester.BuchLadenTester.Service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -41,13 +43,17 @@ public class AuthenticationController  {
 	final
 	ShoppingcartRepository shoppingcartRepository;
 
+	final
+	BookRepository bookRepository;
+
 	//Init of all services and repositories
-	public AuthenticationController(UserService userService, RoleRepository roleRepository, UserRepository userRepository, SecurityServiceImpl securityService, ShoppingcartRepository shoppingcartRepository) {
+	public AuthenticationController(UserService userService, RoleRepository roleRepository, UserRepository userRepository, SecurityServiceImpl securityService, ShoppingcartRepository shoppingcartRepository, BookRepository bookRepository) {
 		this.userService = userService;
 		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
 		this.securityService = securityService;
 		this.shoppingcartRepository = shoppingcartRepository;
+		this.bookRepository = bookRepository;
 	}
 
 	//Login Post is handled automatically
@@ -92,7 +98,7 @@ public class AuthenticationController  {
 		else
 			modelAndView.addObject("user", new User());
 
-		modelAndView.addObject("roles", getRoleStrings());
+		modelAndView.addObject("userRoles", getRoleStrings());
 		modelAndView.setViewName("register");
 
 		if(bindingResult.hasErrors()) {
@@ -117,7 +123,8 @@ public class AuthenticationController  {
 				securityService.autoLogin(user.getEmail(), notEncryptedPassword);
 				modelAndView.addObject("successMessage", "User is registered successfully! with name: "+user.getName());
 				logger.info("User is registered successfully! with name: "+user.getName());
-				modelAndView.setViewName("forward:/books");
+				modelAndView.addObject("books",bookRepository.findAll());
+				modelAndView.setViewName("books");
 			}
 		}
 		return modelAndView;
